@@ -29,12 +29,14 @@ func ExternalIP() (string, error) {
 			if ip == nil {
 				continue
 			}
+			fmt.Println("IPSelect case:", ip.String())
 			if strings.Contains(ip.String(), "192.168.1.") ||
-				strings.Contains(ip.String(), "192.168.2.") {
+				strings.Contains(ip.String(), "192.168.2.") ||
+				strings.Contains(ip.String(), "192.168.3.") {
 				fmt.Println("IPSelect on:", ip.String())
 				return ip.String(), nil
 			}
-			fmt.Println("IPSelect:", ip.String())
+			fmt.Println("IPSelect End:", ip.String())
 		}
 	}
 	return "", errors.New("connected to the network?")
