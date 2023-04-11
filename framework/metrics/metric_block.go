@@ -9,12 +9,12 @@ import (
 
 // RegisterBlockMetric
 // RegisterReqMetric
-//  @Description: 阻塞类信息采集： 数据库,rpc,http,包含时延,并发数,失败数的统计
-//  @param name
-//  @param labels
 //
+//	@Description: 阻塞类信息采集： 数据库,rpc,http,包含时延,并发数,失败数的统计
+//	@param name
+//	@param labels
 func RegisterBlockMetric(name BlockingType, labels ...string) {
-	if !baseconf.GetBaseConf().Metric {
+	if baseconf.GetBaseConf() != nil && !baseconf.GetBaseConf().Metric {
 		return
 	}
 	impl := &MetricBlock{Name: name}
@@ -52,16 +52,15 @@ func RegisterBlockMetric(name BlockingType, labels ...string) {
 	metricBlockMap[name] = impl
 }
 
-//
 // calculateMetric
-//  @Description:
-//  @receiver m
-//  @param latency
-//  @param success
-//  @param labels
 //
+//	@Description:
+//	@receiver m
+//	@param latency
+//	@param success
+//	@param labels
 func (m *MetricBlock) calculateMetric(latency int64, success bool, labels ...string) {
-	if !baseconf.GetBaseConf().Metric {
+	if baseconf.GetBaseConf() != nil && !baseconf.GetBaseConf().Metric {
 		return
 	}
 	if labels == nil {
@@ -78,16 +77,15 @@ func (m *MetricBlock) calculateMetric(latency int64, success bool, labels ...str
 	}
 }
 
-//
 // StartBlock
-//  @Description:
-//  @param stub
-//  @param name
-//  @param labels
-//  @return *BlockStub
 //
+//	@Description:
+//	@param stub
+//	@param name
+//	@param labels
+//	@return *BlockStub
 func StartBlock(stub *BlockStub, name BlockingType, labels ...string) *BlockStub {
-	if !baseconf.GetBaseConf().Metric {
+	if baseconf.GetBaseConf() != nil && !baseconf.GetBaseConf().Metric {
 		return nil
 	}
 	if labels == nil {
@@ -115,7 +113,7 @@ func StartBlock(stub *BlockStub, name BlockingType, labels ...string) *BlockStub
 
 // End 结束 Blockuest 打点
 func (s *BlockStub) End(success bool) {
-	if !baseconf.GetBaseConf().Metric {
+	if baseconf.GetBaseConf() != nil && !baseconf.GetBaseConf().Metric {
 		return
 	}
 	s.Success = success

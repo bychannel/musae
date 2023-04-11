@@ -6,14 +6,13 @@ import (
 	"strings"
 )
 
-//
 // RegisterCounter
-//  @Description: 注册Counter
-//  @param name
-//  @param labels
 //
+//	@Description: 注册Counter
+//	@param name
+//	@param labels
 func RegisterCounter(name CounterType, labels ...string) {
-	if !baseconf.GetBaseConf().Metric {
+	if baseconf.GetBaseConf() != nil && !baseconf.GetBaseConf().Metric {
 		return
 	}
 	if labels == nil {
@@ -36,14 +35,13 @@ func RegisterCounter(name CounterType, labels ...string) {
 	counterMap[name] = counter
 }
 
-//
 // CounterInc
-//  @Description: 增加 1
-//  @param name
-//  @param labels
 //
+//	@Description: 增加 1
+//	@param name
+//	@param labels
 func CounterInc(name CounterType, labels ...string) {
-	if !baseconf.GetBaseConf().Metric {
+	if baseconf.GetBaseConf() != nil && !baseconf.GetBaseConf().Metric {
 		return
 	}
 	if labels == nil {
@@ -65,15 +63,14 @@ func CounterInc(name CounterType, labels ...string) {
 	counter.WithLabelValues(labels...).Inc()
 }
 
-//
 // CounterAdd
-//  @Description: 增加一个指定的值
-//  @param name
-//  @param delta
-//  @param labels
 //
+//	@Description: 增加一个指定的值
+//	@param name
+//	@param delta
+//	@param labels
 func CounterAdd(name CounterType, delta int64, labels ...string) {
-	if !baseconf.GetBaseConf().Metric {
+	if baseconf.GetBaseConf() != nil && !baseconf.GetBaseConf().Metric {
 		return
 	}
 	if labels == nil {

@@ -6,15 +6,14 @@ import (
 	"strings"
 )
 
-//
 // RegisterHistogram
-//  @Description: 直方图分布统计
-//  @param name
-//  @param bucket
-//  @param labels
 //
+//	@Description: 直方图分布统计
+//	@param name
+//	@param bucket
+//	@param labels
 func RegisterHistogram(name HistogramType, bucket []float64, labels ...string) {
-	if !baseconf.GetBaseConf().Metric {
+	if baseconf.GetBaseConf() != nil && !baseconf.GetBaseConf().Metric {
 		return
 	}
 	if bucket == nil {
@@ -43,15 +42,14 @@ func RegisterHistogram(name HistogramType, bucket []float64, labels ...string) {
 	//metricResetMap[string(name)] = false
 }
 
-//
 // HistogramPut
-//  @Description: 添加数据到直方图统计
-//  @param name
-//  @param value
-//  @param labels
 //
+//	@Description: 添加数据到直方图统计
+//	@param name
+//	@param value
+//	@param labels
 func HistogramPut(name HistogramType, value int64, labels ...string) {
-	if !baseconf.GetBaseConf().Metric {
+	if baseconf.GetBaseConf() != nil && !baseconf.GetBaseConf().Metric {
 		return
 	}
 	if labels == nil {

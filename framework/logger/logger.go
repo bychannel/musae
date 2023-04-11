@@ -117,10 +117,17 @@ func Init(logPath, fileName string) error {
 		os.MkdirAll(logPath, 0755)
 	}
 
-	var syncWriter zapcore.WriteSyncer
-	var bws *zapcore.BufferedWriteSyncer
-	var bufSize = baseconf.GetBaseConf().LogBufSize * 1024
-	var bufFlushInterval = time.Duration(baseconf.GetBaseConf().LogFlushInterval) * time.Second
+	var (
+		syncWriter       zapcore.WriteSyncer
+		bws              *zapcore.BufferedWriteSyncer
+		bufSize          int
+		bufFlushInterval time.Duration
+	)
+
+	if baseconf.GetBaseConf() != nil {
+		bufSize = baseconf.GetBaseConf().LogBufSize * 1024
+		bufFlushInterval = time.Duration(baseconf.GetBaseConf().LogFlushInterval) * time.Second
+	}
 	if !global.IsCloud {
 		fileName = fmt.Sprintf("%s-%v", fileName, os.Getpid())
 		bufSize = 1 * 1024                 // 最小为1kb

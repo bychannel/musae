@@ -29,7 +29,7 @@ const (
 	Metric_Type_Node_Exporter            // Node_Exporter agent 上报格式
 )
 
-//只生成一次 #HELP所使用的去重map
+// 只生成一次 #HELP所使用的去重map
 var NameRecord = make(map[string]struct{})
 
 func CalculateHistogram(histogram *io_prometheus_client.Histogram) (uint64, uint64) {
@@ -118,13 +118,12 @@ func writeLog(log *zap.SugaredLogger, metric *MetricPoint) {
 	}
 }
 
-//
 // OutputMetricLog
-//  @Description: 采集信息写入log,异步推送到prometheus
-//  @param log
 //
+//	@Description: 采集信息写入log,异步推送到prometheus
+//	@param log
 func OutputMetricLog(log *zap.SugaredLogger) {
-	if !baseconf.GetBaseConf().Metric {
+	if baseconf.GetBaseConf() != nil && !baseconf.GetBaseConf().Metric {
 		return
 	}
 	mfs, err := prometheus.DefaultGatherer.Gather()
