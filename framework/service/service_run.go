@@ -36,7 +36,7 @@ func (s *Service) Run() error {
 	time.Sleep(2 * time.Second)
 	s.Daprc, err = dapr.NewClientWithPort(s.GRPCPort)
 	for err != nil || s.Daprc == nil {
-		if times++; times >= 3 {
+		if times++; times >= 60 {
 			logger.Fatalf("[service] NewClient error: %v", err)
 		}
 		time.Sleep(1 * time.Second)
