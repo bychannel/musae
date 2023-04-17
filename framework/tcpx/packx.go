@@ -89,13 +89,14 @@ func (packx Packx) PackWithBody(messageID int32, errCode int32, body []byte, key
 // Before use this, users should be aware of which struct used as `dest`.
 // You can use stream's messageID for judgement like:
 // messageID,_:= packx.MessageIDOf(stream)
-// switch messageID {
-//     case 1:
-//       packx.Unpack(stream, &struct1)
-//     case 2:
-//       packx.Unpack(stream, &struct2)
-//     ...
-// }
+//
+//	switch messageID {
+//	    case 1:
+//	      packx.Unpack(stream, &struct1)
+//	    case 2:
+//	      packx.Unpack(stream, &struct2)
+//	    ...
+//	}
 func (packx Packx) Unpack(stream []byte, dest interface{}) (Message, error) {
 	return UnpackWithMarshaller(stream, dest, packx.Marshaller)
 }
@@ -340,7 +341,12 @@ func Decrypt(stream []byte, secretKey string) ([]byte, error) {
 		return nil, errors.New(fmt.Sprintf("Decrypt, CRC check faild, client crc:%d, server crc:%d", crcLen, myCRC))
 	}
 
-	if baseconf.GetBaseConf() != nil && baseconf.GetBaseConf().UseEncrypt == 1 {
+	messageID, err := MessageIDOf(stream)
+	if err != nil {
+		return nil, err
+	}
+
+	if baseconf.GetBaseConf() != nil && baseconf.GetBaseConf().UseEncrypt == 1 && NeedEncrypt(messageID) {
 		// 解密
 		//logger.Debugf("----- cryptData -----%v", cryptData)
 		cryptData = utils.EncryptXORByBytes(cryptData, []byte(secretKey))
@@ -568,13 +574,14 @@ func UnpackWithMarshallerName(stream []byte, dest interface{}, marshallerName st
 // []byte -- header              marshal by json
 // []byte -- body                marshal by marshaller
 // ussage:
-// for {
-//     blockBuf, e:= UnpackToBlockFromReader(reader)
-// 	   go func(buf []byte){
-//         // handle a message block apart
-//     }(blockBuf)
-//     continue
-// }
+//
+//	for {
+//	    blockBuf, e:= UnpackToBlockFromReader(reader)
+//		   go func(buf []byte){
+//	        // handle a message block apart
+//	    }(blockBuf)
+//	    continue
+//	}
 func UnpackToBlockFromReader(reader io.Reader) ([]byte, error) {
 	if reader == nil {
 		return nil, errors.New("reader is nil")
