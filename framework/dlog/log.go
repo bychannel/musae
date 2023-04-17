@@ -5,6 +5,7 @@ import (
 	"fmt"
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/baseconf"
+	"gitlab.musadisca-games.com/wangxw/musae/framework/global"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/logger"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/utils"
 	"go.uber.org/zap"
@@ -79,8 +80,11 @@ func (p *Dlogger) Init(logPath, fileName string, threads int) error {
 		if threads < 0 {
 			threads = 0
 		}
-		fileName = "dlog-" + fileName + "-" + strconv.FormatInt(time.Now().UnixNano()/1e6, 10) + "-" + strconv.Itoa(os.Getpid())
-		//fileName = "dlog-" + fileName
+		if global.IsCloud {
+			fileName = "dlog-" + fileName + "-" + strconv.FormatInt(time.Now().UnixNano()/1e6, 10) + "-" + strconv.Itoa(os.Getpid())
+		} else {
+			fileName = "dlog-" + fileName
+		}
 		atomLevel := zap.NewAtomicLevelAt(zap.InfoLevel)
 		encoder := zapcore.NewConsoleEncoder(zapcore.EncoderConfig{
 			//TimeKey:        "T",

@@ -129,7 +129,7 @@ func Init(logPath, fileName string) error {
 	//	bufFlushInterval = time.Duration(baseconf.GetBaseConf().LogFlushInterval) * time.Second
 	//}
 	if !global.IsCloud {
-		fileName = fmt.Sprintf("%s-%v", fileName, os.Getpid())
+		//fileName = fmt.Sprintf("%s-%v", fileName, os.Getpid())
 		//bufSize = 1 * 1024                 // 最小为1kb
 		//bufFlushInterval = 1 * time.Second // 最小为1s
 	}
