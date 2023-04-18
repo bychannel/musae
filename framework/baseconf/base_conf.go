@@ -15,7 +15,9 @@ type BaseConf struct {
 	IsDebug             bool    `json:"debug"`
 	Protocol            string  `json:"protocol"`            // app-protocol, http or grpc
 	VersionCheck        bool    `json:"versionCheck"`        // 版本检查开关
-	Version             string  `json:"version"`             // 必须匹配版本 [渠道].[大版本号].[小版本号].[热更版本号]
+	Version             string  `json:"version"`             // 服务器版本  [渠道].[大版本号].[小版本号]
+	VersionAndroid      string  `json:"versionAndroid"`      // 安卓版本 [渠道].[大版本号].[小版本号]
+	VersionIOS          string  `json:"versionIOS"`          // IOS版本 [渠道].[大版本号].[小版本号]
 	AutoGateIp          bool    `json:"autoGateIp"`          //自动获取本机IP作为GateIP,IsDebug为true是有效
 	GateIP              string  `json:"gateIP"`              //服务器网关IP
 	GatePort            int32   `json:"gatePort"`            //服务器网关端口
