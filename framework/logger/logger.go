@@ -386,7 +386,8 @@ func WarnDelayAf(delay int64, template string, args ...interface{}) {
 			SaveToRedis(log)
 		}
 		if baseconf.GetBaseConf() != nil && baseconf.GetBaseConf().IsDebug && len(baseconf.GetBaseConf().FeishuRobot) > 0 {
-			PushLog2Chat(baseconf.GetBaseConf().FeishuRobot, "DELAY", log)
+			// TODO 临时关闭
+			// PushLog2Chat(baseconf.GetBaseConf().FeishuRobot, "DELAY", log)
 		}
 		metrics.GaugeInc(metrics.WarnCount)
 		if IsArgsTooLang(zap.WarnLevel, log) {
