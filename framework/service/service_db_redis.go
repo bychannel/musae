@@ -40,7 +40,7 @@ func (s *Service) SaveRedis(db RedisDbType, key string, table *state.KvTable, me
 	dataLen := len(data)
 	ctx := context.Background()
 	now := time.Now()
-	so = append(so, dapr.WithConsistency(dapr.StateConsistencyEventual))
+	so = append(so, dapr.WithConsistency(dapr.StateConsistencyStrong))
 	err = s.Daprc.SaveState(ctx, string(db), key, data, meta, so...)
 	if err != nil {
 		logger.Error("saveRedis err: ", err, db, key, dataLen, meta, table.Str())

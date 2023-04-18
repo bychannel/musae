@@ -55,7 +55,7 @@ func Caller(l zapcore.Level) string {
 		case zap.FatalLevel:
 			level = "FATAL"
 		}
-		return fmt.Sprintf("%s %s %sServer-%d %s %s:%d%s ", time.Now().Format("2006-01-02 15:04:05.000 -0700 MST"), global.SysUserName, global.AppID, global.SID, level, path.Base(file), line, path.Ext(runtime.FuncForPC(funcName).Name()))
+		return fmt.Sprintf("%s %s %sServer-%d %s %s:%d%s ", time.Now().Format("2006-01-02 15:04:05.000 -0700 MST"), global.HostName, global.AppID, global.SID, level, path.Base(file), line, path.Ext(runtime.FuncForPC(funcName).Name()))
 	}
 	return ""
 }
@@ -534,7 +534,7 @@ func InfoAf(template string, args ...interface{}) {
 
 func PushLog2Chat(url, title, text string) {
 	var result interface{}
-	text = fmt.Sprintf("server: [%s]\ngate: [%s]\nlog: %s\n", global.SysUserName, global.GateWay, text)
+	text = fmt.Sprintf("server: [%s]\ngate: [%s]\nlog: %s\n", global.HostName, global.GateWay, text)
 	msg := &FeishuMsg{MsgType: "post", Content: FeishuContent{Post: FeishuZh_cn{Zh_cn: FeishuTitle{Title: title, Content: [][]FeishuTitleContent{[]FeishuTitleContent{FeishuTitleContent{Tag: "text", Text: text}}}}}}}
 	err := http.Post(url, msg, &result, nil)
 	if err != nil {

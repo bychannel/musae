@@ -21,7 +21,7 @@ func (s *Service) DBNext(name string, delta uint64) (uint64, error) {
 	var f context.CancelFunc
 	ctx, f = context.WithTimeout(ctx, global.DB_INVOKE_TIMEOUT*time.Second)
 	defer f()
-	item, err := s.Daprc.GetStateWithConsistency(ctx, string(MongoDbType_MongoAccount), name, nil, dapr.StateConsistencyEventual)
+	item, err := s.Daprc.GetStateWithConsistency(ctx, string(MongoDbType_MongoAccount), name, nil, dapr.StateConsistencyStrong)
 	if err != nil {
 		logger.Errorf("DBNext GetStateWithConsistency err: %v, %v, %+v", err, name, item)
 		return 0, err
@@ -39,7 +39,7 @@ func (s *Service) DBNext(name string, delta uint64) (uint64, error) {
 			Value: []byte(strconv.FormatUint(newMax, 10)),
 			Options: &dapr.StateOptions{
 				Concurrency: dapr.StateConcurrencyFirstWrite,
-				Consistency: dapr.StateConsistencyEventual,
+				Consistency: dapr.StateConsistencyStrong,
 			},
 		},
 	}}
