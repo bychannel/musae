@@ -135,19 +135,25 @@ func (s *Service) initRedis() error {
 			Addrs: []string{
 				baseconf.GetBaseConf().RedisConf.Addr,
 			},
-			DialTimeout:  100 * time.Millisecond,
-			ReadTimeout:  100 * time.Millisecond,
-			WriteTimeout: 100 * time.Millisecond,
+			Password:        baseconf.GetBaseConf().RedisConf.PassWord,
+			DialTimeout:     100 * time.Millisecond,
+			ReadTimeout:     100 * time.Millisecond,
+			WriteTimeout:    100 * time.Millisecond,
+			MaxRetries:      baseconf.GetBaseConf().RedisConf.MaxRetries,
+			MinRetryBackoff: time.Duration(baseconf.GetBaseConf().RedisConf.MinRetryBackoff) * time.Millisecond,
+			MaxRetryBackoff: time.Duration(baseconf.GetBaseConf().RedisConf.MaxRetryBackoff) * time.Millisecond,
 		}
 		s.RedisCluster = redis.NewClusterClient(clusterOpts)
 	} else {
 		opts = &redis.Options{
-			Addr: baseconf.GetBaseConf().RedisConf.AddrDev,
+			Addr:            baseconf.GetBaseConf().RedisConf.AddrDev,
+			DialTimeout:     100 * time.Millisecond,
+			ReadTimeout:     100 * time.Millisecond,
+			WriteTimeout:    100 * time.Millisecond,
+			MaxRetries:      baseconf.GetBaseConf().RedisConf.MaxRetries,
+			MinRetryBackoff: time.Duration(baseconf.GetBaseConf().RedisConf.MinRetryBackoff) * time.Millisecond,
+			MaxRetryBackoff: time.Duration(baseconf.GetBaseConf().RedisConf.MaxRetryBackoff) * time.Millisecond,
 		}
-		// 超时重试配置
-		opts.MaxRetries = baseconf.GetBaseConf().RedisConf.MaxRetries
-		opts.MinRetryBackoff = time.Duration(baseconf.GetBaseConf().RedisConf.MinRetryBackoff) * time.Millisecond
-		opts.MaxRetryBackoff = time.Duration(baseconf.GetBaseConf().RedisConf.MaxRetryBackoff) * time.Millisecond
 		s.Redis = redis.NewClient(opts)
 		logger.RedisCli = s.Redis
 	}
