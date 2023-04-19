@@ -56,6 +56,7 @@ type Service struct {
 	tcp          *tcpx.TcpX
 	http         *web.HttpServer
 	Redis        *redis.Client
+	RedisCluster *redis.ClusterClient
 	state        base.PState
 
 	OnPreInit        base.FPreInit        //服务框架初始化之前调用,rpc,http 注册,dapr client 可用

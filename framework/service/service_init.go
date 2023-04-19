@@ -129,26 +129,29 @@ func (s *Service) initWeb() error {
 
 func (s *Service) initRedis() error {
 	var opts *redis.Options
-
+	var clusterOpts *redis.ClusterOptions
 	if global.IsCloud {
-		opts = &redis.Options{
-			Addr:     baseconf.GetBaseConf().RedisConf.Addr,
-			Username: baseconf.GetBaseConf().RedisConf.UserName,
-			Password: baseconf.GetBaseConf().RedisConf.PassWord,
-			DB:       baseconf.GetBaseConf().RedisConf.DB,
+		clusterOpts = &redis.ClusterOptions{
+			Addrs: []string{
+				baseconf.GetBaseConf().RedisConf.Addr,
+			},
+			DialTimeout:  100 * time.Millisecond,
+			ReadTimeout:  100 * time.Millisecond,
+			WriteTimeout: 100 * time.Millisecond,
 		}
+		s.RedisCluster = redis.NewClusterClient(clusterOpts)
 	} else {
 		opts = &redis.Options{
 			Addr: baseconf.GetBaseConf().RedisConf.AddrDev,
 		}
+		// 超时重试配置
+		opts.MaxRetries = baseconf.GetBaseConf().RedisConf.MaxRetries
+		opts.MinRetryBackoff = time.Duration(baseconf.GetBaseConf().RedisConf.MinRetryBackoff) * time.Millisecond
+		opts.MaxRetryBackoff = time.Duration(baseconf.GetBaseConf().RedisConf.MaxRetryBackoff) * time.Millisecond
+		s.Redis = redis.NewClient(opts)
+		logger.RedisCli = s.Redis
 	}
-	// 超时重试配置
-	opts.MaxRetries = baseconf.GetBaseConf().RedisConf.MaxRetries
-	opts.MinRetryBackoff = time.Duration(baseconf.GetBaseConf().RedisConf.MinRetryBackoff) * time.Millisecond
-	opts.MaxRetryBackoff = time.Duration(baseconf.GetBaseConf().RedisConf.MaxRetryBackoff) * time.Millisecond
 
-	s.Redis = redis.NewClient(opts)
-	logger.RedisCli = s.Redis
 	logger.Infof("redis Init success,options:%+v", opts)
 	return nil
 }

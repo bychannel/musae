@@ -6,6 +6,7 @@ import (
 	"github.com/dapr/go-sdk/client"
 	"github.com/go-redis/redis/v8"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/baseconf"
+	"gitlab.musadisca-games.com/wangxw/musae/framework/global"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/logger"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/threading"
 	"google.golang.org/grpc/metadata"
@@ -82,7 +83,11 @@ func (s *Service) SaveToConfigCenter(key, value string) error {
 	ctx = metadata.NewOutgoingContext(ctx, md)
 
 	// set config value
-	s.Redis.Set(ctx, key, value, -1)
+	if global.IsCloud {
+		s.RedisCluster.Set(ctx, key, value, -1)
+	} else {
+		s.Redis.Set(ctx, key, value, -1)
+	}
 	logger.Debugf("save to config center,%s:%s", key, value)
 	return nil
 }
