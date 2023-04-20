@@ -751,7 +751,7 @@ func PackWithMarshallerAndBody(message Message, body []byte) ([]byte, error) {
 		message.MessageID, totalLen+4, totalLen, crcLen, len(content))
 	logger.Debug("PackWithMarshaller, msg",
 		message, lengthBuf, messageIDBuf, headerLengthBuf, bodyLengthBuf, crcBuf, len(packet))
-	//logger.Debugf("%v", packet)
+	logger.Debugf("===>>>PackWithMarshallerAndBody len:[%v],data:%v", len(packet), packet)
 	return packet, nil
 }
 
