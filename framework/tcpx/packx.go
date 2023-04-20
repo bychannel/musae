@@ -316,7 +316,7 @@ func (packx Packx) BodyBytesOf(stream []byte) ([]byte, error) {
 func Decrypt(stream []byte, secretKey string) ([]byte, error) {
 	logger.Debugf("----- 收到的数据 -----%v, secretKey:%s", stream, secretKey)
 	allLen, err := LengthOf(stream)
-	//logger.Debugf("----- allLen -----%d", allLen)
+	logger.Debugf("----- allLen -----%d", allLen)
 	if err != nil {
 		logger.Warnf(err.Error())
 		return nil, err
@@ -707,7 +707,7 @@ func PackWithMarshallerAndBody(message Message, body []byte) ([]byte, error) {
 		secretKeys := message.SecretKeys
 		if len(secretKeys) > 0 {
 			secretKey = secretKeys[0]
-			//logger.Debugf("加密--------, %s", secretKey)
+			logger.Debugf("加密--------, %s", secretKey)
 			//if len(secretKey) <= 0 {
 			//	return nil, errors.New(fmt.Sprintf("PackWithMarshallerAndBody, do not get secret key value, message.MessageID=%d", message.MessageID))
 			//}
@@ -716,10 +716,10 @@ func PackWithMarshallerAndBody(message Message, body []byte) ([]byte, error) {
 			content = utils.EncryptXORByBytes(content, []byte(secretKey))
 		}
 
-		//Logger.Println(fmt.Sprintf("messageId=%d, 异或加密", message.MessageID))
-		//Logger.Println(fmt.Sprintf("原文:%v", body))
-		//Logger.Println(fmt.Sprintf("%s, 秘钥:%v", secretKey, []byte(secretKey)))
-		//Logger.Println(fmt.Sprintf("密文:%v", content))
+		logger.Debugf(fmt.Sprintf("messageId=%d, 异或加密", message.MessageID))
+		logger.Debugf(fmt.Sprintf("原文:%v", body))
+		logger.Debugf(fmt.Sprintf("%s, 秘钥:%v", secretKey, []byte(secretKey)))
+		logger.Debugf(fmt.Sprintf("密文:%v", content))
 	}
 	//Logger.Println(fmt.Sprintf("content:%v", content))
 
@@ -747,10 +747,10 @@ func PackWithMarshallerAndBody(message Message, body []byte) ([]byte, error) {
 	packet = append(packet, crcBuf...)
 	//packet = append(packet, messageIDBuf...)
 	packet = append(packet, content...)
-	//logger.Debugf("发送数据[%d]: 数据包长度:%d, 数据长度:%d, crc值:%d, 包体长度:%d",
-	//	message.MessageID, totalLen+4, totalLen, crcLen, len(content))
-	//logger.Debug("PackWithMarshaller, msg",
-	//	message, lengthBuf, messageIDBuf, headerLengthBuf, bodyLengthBuf, crcBuf, len(packet))
+	logger.Debugf("发送数据[%d]: 数据包长度:%d, 数据长度:%d, crc值:%d, 包体长度:%d",
+		message.MessageID, totalLen+4, totalLen, crcLen, len(content))
+	logger.Debug("PackWithMarshaller, msg",
+		message, lengthBuf, messageIDBuf, headerLengthBuf, bodyLengthBuf, crcBuf, len(packet))
 	//logger.Debugf("%v", packet)
 	return packet, nil
 }
