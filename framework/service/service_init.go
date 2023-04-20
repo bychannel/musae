@@ -32,6 +32,7 @@ func (s *Service) PrivateTopicID() string {
 }
 
 func (s *Service) InitLog() error {
+	fmt.Println("InitLog dir:", s.LogDir)
 	var fileName string
 	if global.IsCloud {
 		//fileName = fmt.Sprintf("%s-%v-%v", s.AppId, global.SID, time.Now().Format("2006-01-02-15-04-05"))
