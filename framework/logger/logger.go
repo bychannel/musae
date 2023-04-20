@@ -115,7 +115,10 @@ func Init(logPath, fileName string) error {
 	})
 
 	if utils.PathExists(logPath) == false {
-		os.MkdirAll(logPath, 0755)
+		if err := os.MkdirAll(logPath, 0755); err != nil {
+			fmt.Printf("create logdir:%s err:%v \n", logPath, err)
+			return err
+		}
 	}
 
 	var (
