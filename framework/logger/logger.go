@@ -55,7 +55,7 @@ func Caller(l zapcore.Level) string {
 		case zap.FatalLevel:
 			level = "FATAL"
 		}
-		return fmt.Sprintf("%s %s %s %s %s:%d%s ", time.Now().Format("2006-01-02 15:04:05.000 -0700 MST"), global.HostName, global.AppID, level, path.Base(file), line, path.Ext(runtime.FuncForPC(funcName).Name()))
+		return fmt.Sprintf("%s %s %s %s %s %s:%d%s ", time.Now().Format("2006-01-02 15:04:05.000 -0700 MST"), global.GateWay, global.HostName, global.AppID, level, path.Base(file), line, path.Ext(runtime.FuncForPC(funcName).Name()))
 	}
 	return ""
 }
