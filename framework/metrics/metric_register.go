@@ -68,7 +68,7 @@ const (
 	GateAuthCount     GaugeType = "GateAuthCount"     // 网关Auth验证成功用户数量
 	GateAuthFailCount GaugeType = "GateAuthFailCount" // 网关Auth验证失败用户数量
 	UserActorCount    GaugeType = "UserActorCount"    // 用户模型在数据中的数量
-	UserCount         GaugeType = "UserCount"         // 网关 用户数量
+	UserCount         GaugeType = "UserCount"         // 用户数量
 	UserConn          GaugeType = "UserConn"          // 网关 用户连接数量
 	PendingUserCount  GaugeType = "PendingUserCount"  // 网关 挂起的用户数量
 	QueueUserCount    GaugeType = "QueueUserCount"    // 网关 登录队列用户数量
