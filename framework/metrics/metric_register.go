@@ -53,6 +53,8 @@ const (
 	MongoRDelayHist     HistogramType = "MongoRDelayHist"     // redis r delay histogram
 	MongoWDelayHist     HistogramType = "MongoWDelayHist"     // redis r delay histogram
 
+	GuideDelayHist HistogramType = "GuideDelayHist" // guide delay histogram
+
 	LoginDelayHist HistogramType = "LoginDelayHist" // login delay histogram
 
 	EnterDelayHist HistogramType = "EnterDelayHist" // endter delay histogram
@@ -60,6 +62,8 @@ const (
 	GateDelayHist HistogramType = "GateDelayHist" // gate delay histogram
 
 	// 具体服务
+	GuideSucceedCount GaugeType = "GuideSucceedCount" // 请求Guide成功的用户数量
+	GuideFailedCount  GaugeType = "GuideFailedCount"  // 请求Guide失败的用户数量
 	LoginSucceedCount GaugeType = "LoginSucceedCount" // 登录Login成功的用户数量
 	LoginFailedCount  GaugeType = "LoginFailedCount"  // 登录Login失败的用户数量
 	EnterSucceedCount GaugeType = "EnterSucceedCount" // 登录成功成功的用户数量
