@@ -4,6 +4,7 @@ import (
 	"errors"
 	dapr "github.com/dapr/go-sdk/client"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/base"
+	"gitlab.musadisca-games.com/wangxw/musae/framework/baseconf"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/logger"
 	"net/http"
 	"time"
@@ -33,10 +34,9 @@ func (s *Service) Run() error {
 
 	var err error
 	times := 0
-	time.Sleep(2 * time.Second)
 	s.Daprc, err = dapr.NewClientWithPort(s.GRPCPort)
 	for err != nil || s.Daprc == nil {
-		if times++; times >= 60 {
+		if times++; times >= baseconf.GetBaseConf().DaprClientRetry {
 			logger.Fatalf("[service] NewClient error: %v", err)
 		}
 		time.Sleep(1 * time.Second)

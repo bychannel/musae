@@ -14,6 +14,7 @@ type RedisConf struct {
 type BaseConf struct {
 	IsDebug             bool    `json:"debug"`
 	Protocol            string  `json:"protocol"`            // app-protocol, http or grpc
+	DaprClientRetry     int     `json:"daprClientRetry"`     // dapr client 重连次数
 	VersionCheck        bool    `json:"versionCheck"`        // 版本检查开关
 	Version             string  `json:"version"`             // 服务器版本  [渠道].[大版本号].[小版本号]
 	VersionAndroid      string  `json:"versionAndroid"`      // 安卓版本 [渠道].[大版本号].[小版本号]
