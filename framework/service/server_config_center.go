@@ -23,8 +23,8 @@ func (s *Service) InitConfigCenter() {
 		if err == nil && val != "" {
 			s.CfgKeys.Store(key, val)
 		} else {
-			if errors.Is(err, DB_ERROR_NOT_EXIST) || strings.Contains(err.Error(), redis.Nil.Error()) {
-				logger.Errorf("GetFromConfigCenter [%s] not exist, err: %+v", key, err)
+			if errors.Is(err, client.ErrEmpty) || strings.Contains(err.Error(), redis.Nil.Error()) {
+				logger.Warnf("GetFromConfigCenter [%s] not exist, err: %+v", key, err)
 			} else {
 				logger.Errorf("GetFromConfigCenter [%s] err:%s", key, err)
 
@@ -32,7 +32,7 @@ func (s *Service) InitConfigCenter() {
 		}
 	}
 	s.CfgKeys.Range(func(key, value any) bool {
-		logger.Infof("CfgKeys [%s]:[%s]", key, value)
+		logger.Infof("ConfigCenter Keys [%s]:[%s]", key, value)
 		return true
 	})
 }
@@ -65,7 +65,7 @@ func (s *Service) GetFromConfigCenter(key string) (string, error) {
 		return "", err
 	}
 	if items == nil {
-		return "", DB_ERROR_NOT_EXIST
+		return "", client.ErrEmpty
 	}
 	logger.Debugf("get from config center,%s:%s", key, (*items).Value)
 	return (*items).Value, nil
