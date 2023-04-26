@@ -44,7 +44,7 @@ func (s *Service) SaveRedis(db RedisDbType, key string, table *state.KvTable, me
 	now := time.Now()
 	so = append(so, dapr.WithConsistency(dapr.StateConsistencyStrong))
 	//err = s.Daprc.SaveState(ctx, string(db), key, data, meta, so...)
-	_, err = utils.RetryDoSync(baseconf.GetBaseConf().DbGetRetryCount, func() (any, error) {
+	_, err = utils.RetryDoSync(baseconf.GetBaseConf().DbSetRetryCount, func() (any, error) {
 		return nil, s.Daprc.SaveState(ctx, string(db), key, data, meta, so...)
 	})
 	if err != nil {

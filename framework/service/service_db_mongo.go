@@ -75,7 +75,7 @@ func (s *Service) SaveMongo(db MongoDbType, key string, table *state.KvTable, me
 	ctx := context.Background()
 	now := time.Now()
 	//err = s.Daprc.SaveState(ctx, string(db), key, data, meta, so...)
-	_, err = utils.RetryDoSync(baseconf.GetBaseConf().DbGetRetryCount, func() (any, error) {
+	_, err = utils.RetryDoSync(baseconf.GetBaseConf().DbSetRetryCount, func() (any, error) {
 		return nil, s.Daprc.SaveState(ctx, string(db), key, data, meta, so...)
 	})
 	if err != nil {
