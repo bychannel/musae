@@ -4,9 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	dapr "github.com/dapr/go-sdk/client"
+	"gitlab.musadisca-games.com/wangxw/musae/framework/baseconf"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/logger"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/metrics"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/state"
+	"gitlab.musadisca-games.com/wangxw/musae/framework/utils"
 	"time"
 )
 
@@ -41,7 +43,10 @@ func (s *Service) SaveRedis(db RedisDbType, key string, table *state.KvTable, me
 	ctx := context.Background()
 	now := time.Now()
 	so = append(so, dapr.WithConsistency(dapr.StateConsistencyStrong))
-	err = s.Daprc.SaveState(ctx, string(db), key, data, meta, so...)
+	//err = s.Daprc.SaveState(ctx, string(db), key, data, meta, so...)
+	_, err = utils.RetryDoSync(baseconf.GetBaseConf().DbGetRetryCount, func() (any, error) {
+		return nil, s.Daprc.SaveState(ctx, string(db), key, data, meta, so...)
+	})
 	if err != nil {
 		logger.Error("saveRedis err: ", err, db, key, dataLen, meta, table.Str())
 		metrics.GaugeInc(metrics.RedisWErr)
@@ -57,7 +62,10 @@ func (s *Service) SaveRedis(db RedisDbType, key string, table *state.KvTable, me
 func (s *Service) GetRedis(db RedisDbType, key string, meta map[string]string) (*state.KvTable, error) {
 	ctx := context.Background()
 	now := time.Now()
-	item, err := s.Daprc.GetState(ctx, string(db), key, meta)
+	//item, err := s.Daprc.GetState(ctx, string(db), key, meta)
+	item, err := utils.RetryDoSync(baseconf.GetBaseConf().DbGetRetryCount, func() (*dapr.StateItem, error) {
+		return s.Daprc.GetState(ctx, string(db), key, meta)
+	})
 	if err != nil {
 		logger.Error("getRedis GetState err: ", err)
 		metrics.GaugeInc(metrics.RedisRErr)

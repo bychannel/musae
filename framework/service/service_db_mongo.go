@@ -4,9 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	dapr "github.com/dapr/go-sdk/client"
+	"gitlab.musadisca-games.com/wangxw/musae/framework/baseconf"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/logger"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/metrics"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/state"
+	"gitlab.musadisca-games.com/wangxw/musae/framework/utils"
 	"time"
 )
 
@@ -72,7 +74,10 @@ func (s *Service) SaveMongo(db MongoDbType, key string, table *state.KvTable, me
 	dataLen := len(table.Data)
 	ctx := context.Background()
 	now := time.Now()
-	err = s.Daprc.SaveState(ctx, string(db), key, data, meta, so...)
+	//err = s.Daprc.SaveState(ctx, string(db), key, data, meta, so...)
+	_, err = utils.RetryDoSync(baseconf.GetBaseConf().DbGetRetryCount, func() (any, error) {
+		return nil, s.Daprc.SaveState(ctx, string(db), key, data, meta, so...)
+	})
 	if err != nil {
 		logger.Error("saveMongo err: ", err, db, key, dataLen, table.Str())
 		metrics.GaugeInc(metrics.MongoWErr)
@@ -86,10 +91,12 @@ func (s *Service) SaveMongo(db MongoDbType, key string, table *state.KvTable, me
 }
 
 func (s *Service) GetMongo(db MongoDbType, key string, meta map[string]string) (*state.KvTable, error) {
-
 	ctx := context.Background()
 	now := time.Now()
-	item, err := s.Daprc.GetState(ctx, string(db), key, meta)
+	//item, err := s.Daprc.GetState(ctx, string(db), key, meta)
+	item, err := utils.RetryDoSync(baseconf.GetBaseConf().DbGetRetryCount, func() (*dapr.StateItem, error) {
+		return s.Daprc.GetState(ctx, string(db), key, meta)
+	})
 	if err != nil {
 		logger.Error("getMongo GetState err: ", err)
 		metrics.GaugeInc(metrics.MongoRErr)
