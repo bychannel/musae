@@ -22,20 +22,24 @@ func RetryDoSync[T any](retryCount int, fn retryFunc1[T]) (T, error) {
 func RetryDoSyncInterval[T any](retryCount int, intervalMs int, fn retryFunc1[T]) (T, error) {
 	var nilT T
 
-	if retryCount <= 0 {
-		return nilT, errors.New("retry count must be positive")
+	if retryCount < 0 {
+		return nilT, errors.New("retry count must be >=0")
 	}
 
 	var res T
 	var err error
-	for i := 0; i < retryCount; i++ {
+	for i := 0; i <= retryCount; i++ {
 		res, err = fn()
 		if err == nil {
 			return res, nil
 		}
 
-		// 间隔时间
-		time.Sleep(time.Duration(intervalMs) * time.Millisecond)
+		if i != retryCount { // 最后一遍执行完, 无需等待
+			// 间隔时间
+			time.Sleep(time.Duration(intervalMs) * time.Millisecond)
+		}
 	}
-	return nilT, errors.New("retry got nil return value")
+
+	// 多次执行的结果后, err都不为nil
+	return nilT, err
 }
