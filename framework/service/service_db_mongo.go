@@ -71,13 +71,20 @@ func (s *Service) SaveMongo(db MongoDbType, key string, table *state.KvTable, me
 		return DB_ERROR_MARSHAL
 	}
 
+	var (
+		startT = time.Now()
+	)
+
 	dataLen := len(table.Data)
 	ctx := context.Background()
 	now := time.Now()
 	//err = s.Daprc.SaveState(ctx, string(db), key, data, meta, so...)
-	_, err = utils.RetryDoSync(baseconf.GetBaseConf().DbSetRetryCount, func() (any, error) {
-		return nil, s.Daprc.SaveState(ctx, string(db), key, data, meta, so...)
-	})
+	_, err = utils.RetryDoSyncInterval(
+		baseconf.GetBaseConf().MusaeDbSetRetryCount,
+		baseconf.GetBaseConf().MusaeDbRetryInterval,
+		func() (any, error) {
+			return nil, s.Daprc.SaveState(ctx, string(db), key, data, meta, so...)
+		})
 	if err != nil {
 		logger.Error("saveMongo err: ", err, db, key, dataLen, table.Str())
 		metrics.GaugeInc(metrics.MongoWErr)
@@ -87,16 +94,24 @@ func (s *Service) SaveMongo(db MongoDbType, key string, table *state.KvTable, me
 	metrics.GaugeInc(metrics.MongoWCount)
 	metrics.GaugeAdd(metrics.MongoWSize, int64(dataLen))
 	logger.Debugf("SaveMongo db:[%v], key:[%v], kvTable: %v", db, key, table.Str())
+	logger.WarnDelayf(time.Since(startT).Milliseconds(), "SaveMongo")
 	return nil
 }
 
 func (s *Service) GetMongo(db MongoDbType, key string, meta map[string]string) (*state.KvTable, error) {
+	var (
+		startT = time.Now()
+	)
+
 	ctx := context.Background()
 	now := time.Now()
 	//item, err := s.Daprc.GetState(ctx, string(db), key, meta)
-	item, err := utils.RetryDoSync(baseconf.GetBaseConf().DbGetRetryCount, func() (*dapr.StateItem, error) {
-		return s.Daprc.GetState(ctx, string(db), key, meta)
-	})
+	item, err := utils.RetryDoSyncInterval(
+		baseconf.GetBaseConf().MusaeDbGetRetryCount,
+		baseconf.GetBaseConf().MusaeDbRetryInterval,
+		func() (*dapr.StateItem, error) {
+			return s.Daprc.GetState(ctx, string(db), key, meta)
+		})
 	if err != nil {
 		logger.Error("getMongo GetState err: ", err)
 		metrics.GaugeInc(metrics.MongoRErr)
@@ -118,6 +133,8 @@ func (s *Service) GetMongo(db MongoDbType, key string, meta map[string]string) (
 		return nil, DB_ERROR_UNMARSHAL
 	}
 	logger.Debugf("getMongo db:[%v], key:[%v], kvTable:%s", db, key, table.Str())
+	logger.WarnDelayf(time.Since(startT).Milliseconds(), "SaveMongo")
+
 	return table, nil
 }
 
