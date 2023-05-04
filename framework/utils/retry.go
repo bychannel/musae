@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"github.com/pkg/errors"
 	"time"
 )
@@ -21,6 +22,10 @@ func RetryDoSync[T any](retryCount int, fn retryFunc1[T]) (T, error) {
 //@param fn 重试执行的函数
 func RetryDoSyncInterval[T any](retryCount int, intervalMs int, fn retryFunc1[T]) (T, error) {
 	var nilT T
+
+	if fn == nil {
+		return nilT, fmt.Errorf("retry handler required")
+	}
 
 	if retryCount < 0 {
 		return nilT, errors.New("retry count must be >=0")
