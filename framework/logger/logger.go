@@ -294,9 +294,9 @@ func SaveToRedis(log ...string) {
 		defer f()
 		RedisCli.RPush(ctx, baseconf.GetBaseConf().RedisLogKey, log)
 	}
-	for _, k := range log {
-		fmt.Println(k)
-	}
+	//for _, k := range log { // 大日志导致服务卡死
+	//	fmt.Println(k)
+	//}
 }
 
 func Debug(args ...interface{}) {
