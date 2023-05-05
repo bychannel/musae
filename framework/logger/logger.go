@@ -243,49 +243,55 @@ func ToString(value interface{}) string {
 	return key
 }
 
-func IsArgsTooLang(l zapcore.Level, str string) bool {
+func writeLog(l zapcore.Level, str string) {
 	if baseconf.GetBaseConf() == nil {
-		return false
+		return
 	}
+
 	maxLen := baseconf.GetBaseConf().LogMaxLen
 	strLen := len(str)
 	if maxLen > 0 && strLen > maxLen {
 		fragmentNum := strLen / maxLen
-		fragmentLast := strLen % maxLen
-		for i := 0; i < fragmentNum; i++ {
-			fmt.Println(str[i*maxLen : (i+1)*maxLen])
+		for i := 0; i <= fragmentNum; i++ {
+			var fragmentStr string
+			if i != fragmentNum {
+				fragmentStr = str[i*maxLen : (i+1)*maxLen]
+			} else {
+				fragmentStr = str[fragmentNum*maxLen : strLen]
+			}
 			switch l {
 			case zap.DebugLevel:
-				sugar.Debug(str[i*maxLen : (i+1)*maxLen])
+				sugar.Debug(fragmentStr)
 			case zap.InfoLevel:
-				sugar.Info(str[i*maxLen : (i+1)*maxLen])
+				sugar.Info(fragmentStr)
 			case zap.WarnLevel:
-				sugar.Warn(str[i*maxLen : (i+1)*maxLen])
+				sugar.Warn(fragmentStr)
 			case zap.ErrorLevel:
-				sugar.Error(str[i*maxLen : (i+1)*maxLen])
+				sugar.Error(fragmentStr)
 			case zap.FatalLevel:
-				sugar.Fatal(str[i*maxLen : (i+1)*maxLen])
+				sugar.Fatal(fragmentStr)
 			}
+			fmt.Println(fragmentStr)
 		}
-		if fragmentLast > 0 {
-			fmt.Println(str[fragmentNum*maxLen : strLen])
-			switch l {
-			case zap.DebugLevel:
-				sugar.Debug(str[fragmentNum*maxLen : strLen])
-			case zap.InfoLevel:
-				sugar.Info(str[fragmentNum*maxLen : strLen])
-			case zap.WarnLevel:
-				sugar.Warn(str[fragmentNum*maxLen : strLen])
-			case zap.ErrorLevel:
-				sugar.Error(str[fragmentNum*maxLen : strLen])
-			case zap.FatalLevel:
-				sugar.Fatal(str[fragmentNum*maxLen : strLen])
-			}
+	} else {
+		switch l {
+		case zap.DebugLevel:
+			sugar.Debug(str)
+		case zap.InfoLevel:
+			sugar.Info(str)
+		case zap.WarnLevel:
+			sugar.Warn(str)
+		case zap.ErrorLevel:
+			sugar.Error(str)
+		case zap.FatalLevel:
+			sugar.Fatal(str)
 		}
-		return true
+		fmt.Println(str)
 	}
 
-	return false
+	if !global.IsCloud {
+		SaveToRedis(str)
+	}
 }
 
 func SaveToRedis(log ...string) {
@@ -294,9 +300,16 @@ func SaveToRedis(log ...string) {
 		defer f()
 		RedisCli.RPush(ctx, baseconf.GetBaseConf().RedisLogKey, log)
 	}
-	//for _, k := range log { // 大日志导致服务卡死
-	//	fmt.Println(k)
-	//}
+}
+
+func PushLog2Chat(url, title, text string) {
+	var result interface{}
+	text = fmt.Sprintf("server: [%s]\ngate: [%s]\nlog: %s\n", global.HostName, global.GateWay, text)
+	msg := &FeishuMsg{MsgType: "post", Content: FeishuContent{Post: FeishuZh_cn{Zh_cn: FeishuTitle{Title: title, Content: [][]FeishuTitleContent{[]FeishuTitleContent{FeishuTitleContent{Tag: "text", Text: text}}}}}}}
+	err := http.Post(url, msg, &result, nil)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 func Debug(args ...interface{}) {
@@ -305,14 +318,7 @@ func Debug(args ...interface{}) {
 
 func DebugA(args ...interface{}) {
 	if atom.Enabled(zap.DebugLevel) {
-		log := Caller(zap.DebugLevel) + fmt.Sprintln(args)
-		if baseconf.GetBaseConf() != nil && !global.IsCloud {
-			SaveToRedis(log)
-		}
-		if IsArgsTooLang(zap.DebugLevel, log) {
-			return
-		}
-		sugar.Debug(log)
+		writeLog(zap.DebugLevel, Caller(zap.DebugLevel)+fmt.Sprintln(args))
 	}
 }
 
@@ -322,14 +328,7 @@ func Debugf(template string, args ...interface{}) {
 
 func DebugAf(template string, args ...interface{}) {
 	if atom.Enabled(zap.DebugLevel) {
-		log := Caller(zap.DebugLevel) + fmt.Sprintf(template, args...)
-		if baseconf.GetBaseConf() != nil && !global.IsCloud {
-			SaveToRedis(log)
-		}
-		if IsArgsTooLang(zap.DebugLevel, log) {
-			return
-		}
-		sugar.Debugf(log)
+		writeLog(zap.DebugLevel, Caller(zap.DebugLevel)+fmt.Sprintf(template, args...))
 	}
 }
 
@@ -339,15 +338,7 @@ func Warn(args ...interface{}) {
 
 func WarnA(args ...interface{}) {
 	if atom.Enabled(zap.WarnLevel) {
-		log := Caller(zap.WarnLevel) + fmt.Sprintln(args...)
-		if baseconf.GetBaseConf() != nil && !global.IsCloud {
-			SaveToRedis(log)
-		}
-		metrics.GaugeInc(metrics.WarnCount)
-		if IsArgsTooLang(zap.WarnLevel, log) {
-			return
-		}
-		sugar.Warn(log)
+		writeLog(zap.WarnLevel, Caller(zap.WarnLevel)+fmt.Sprintln(args...))
 	}
 }
 
@@ -357,15 +348,8 @@ func Warnf(template string, args ...interface{}) {
 
 func WarnAf(template string, args ...interface{}) {
 	if atom.Enabled(zap.WarnLevel) {
-		log := Caller(zap.WarnLevel) + fmt.Sprintf(template, args...)
-		if baseconf.GetBaseConf() != nil && !global.IsCloud {
-			SaveToRedis(log)
-		}
+		writeLog(zap.WarnLevel, Caller(zap.WarnLevel)+fmt.Sprintf(template, args...))
 		metrics.GaugeInc(metrics.WarnCount)
-		if IsArgsTooLang(zap.WarnLevel, log) {
-			return
-		}
-		sugar.Warnf(log)
 	}
 }
 
@@ -385,18 +369,13 @@ func WarnDelayAf(delay int64, template string, args ...interface{}) {
 		template += " cost-time:%dms"
 		args = append(args, delay)
 		log := Caller(zap.WarnLevel) + fmt.Sprintf(template, args...)
-		if baseconf.GetBaseConf() != nil && !global.IsCloud {
-			SaveToRedis(log)
-		}
+		writeLog(zap.WarnLevel, log)
+
 		if baseconf.GetBaseConf() != nil && baseconf.GetBaseConf().IsDebug && len(baseconf.GetBaseConf().FeishuRobot) > 0 {
 			// TODO 临时关闭
 			// PushLog2Chat(baseconf.GetBaseConf().FeishuRobot, "DELAY", log)
 		}
 		metrics.GaugeInc(metrics.WarnCount)
-		if IsArgsTooLang(zap.WarnLevel, log) {
-			return
-		}
-		sugar.Warnf(log)
 	}
 }
 
@@ -409,17 +388,11 @@ func ErrorA(args ...interface{}) {
 		log := Caller(zap.ErrorLevel) + fmt.Sprintln(args...)
 		callStack := "===>>>CallStack\n" + string(debug.Stack())
 		logStack := log + "\n" + callStack
-		if baseconf.GetBaseConf() != nil && !global.IsCloud {
-			SaveToRedis(logStack)
-		}
+		writeLog(zap.ErrorLevel, logStack)
 		if baseconf.GetBaseConf() != nil && baseconf.GetBaseConf().IsDebug && len(baseconf.GetBaseConf().FeishuRobot) > 0 {
 			PushLog2Chat(baseconf.GetBaseConf().FeishuRobot, "ERROR", logStack)
 		}
 		metrics.GaugeInc(metrics.ErrorCount)
-		if IsArgsTooLang(zap.ErrorLevel, log) {
-			return
-		}
-		sugar.Error(logStack)
 	}
 }
 
@@ -432,17 +405,12 @@ func ErrorAf(template string, args ...interface{}) {
 		log := Caller(zap.ErrorLevel) + fmt.Sprintf(template, args...)
 		callStack := "===>>>CallStack\n" + string(debug.Stack())
 		logStack := log + "\n" + callStack
-		if baseconf.GetBaseConf() != nil && !global.IsCloud {
-			SaveToRedis(logStack)
-		}
+		writeLog(zap.ErrorLevel, logStack)
+
 		if baseconf.GetBaseConf() != nil && baseconf.GetBaseConf().IsDebug && len(baseconf.GetBaseConf().FeishuRobot) > 0 {
 			PushLog2Chat(baseconf.GetBaseConf().FeishuRobot, "ERROR", logStack)
 		}
 		metrics.GaugeInc(metrics.ErrorCount)
-		if IsArgsTooLang(zap.ErrorLevel, log) {
-			return
-		}
-		sugar.Error(logStack)
 	}
 }
 
@@ -463,17 +431,12 @@ func FatalA(args ...interface{}) {
 		log := Caller(zap.FatalLevel) + fmt.Sprintln(args...)
 		callStack := "===>>>CallStack\n" + string(debug.Stack())
 		logStack := log + "\n" + callStack
-		if baseconf.GetBaseConf() != nil && !global.IsCloud {
-			SaveToRedis(logStack)
-		}
+		writeLog(zap.FatalLevel, logStack)
+
 		if baseconf.GetBaseConf() != nil && baseconf.GetBaseConf().IsDebug && len(baseconf.GetBaseConf().FeishuRobot) > 0 {
 			PushLog2Chat(baseconf.GetBaseConf().FeishuRobot, "FATAL", logStack)
 		}
 		metrics.GaugeInc(metrics.FatalCount)
-		if IsArgsTooLang(zap.FatalLevel, log) {
-			return
-		}
-		sugar.Fatal(log)
 	}
 }
 
@@ -486,17 +449,11 @@ func FatalAf(template string, args ...interface{}) {
 		log := Caller(zap.FatalLevel) + fmt.Sprintf(template, args...)
 		callStack := "===>>>CallStack\n" + string(debug.Stack())
 		logStack := log + "\n" + callStack
-		if baseconf.GetBaseConf() != nil && !global.IsCloud {
-			SaveToRedis(logStack)
-		}
+		writeLog(zap.FatalLevel, logStack)
 		if baseconf.GetBaseConf() != nil && baseconf.GetBaseConf().IsDebug && len(baseconf.GetBaseConf().FeishuRobot) > 0 {
 			PushLog2Chat(baseconf.GetBaseConf().FeishuRobot, "FATAL", logStack)
 		}
 		metrics.GaugeInc(metrics.FatalCount)
-		if IsArgsTooLang(zap.FatalLevel, log) {
-			return
-		}
-		sugar.Fatalf(log)
 	}
 }
 
@@ -506,14 +463,7 @@ func Info(args ...interface{}) {
 
 func InfoA(args ...interface{}) {
 	if atom.Enabled(zap.InfoLevel) {
-		log := Caller(zap.InfoLevel) + fmt.Sprintln(args...)
-		if baseconf.GetBaseConf() != nil && !global.IsCloud {
-			SaveToRedis(log)
-		}
-		if IsArgsTooLang(zap.InfoLevel, log) {
-			return
-		}
-		sugar.Info(log)
+		writeLog(zap.InfoLevel, Caller(zap.InfoLevel)+fmt.Sprintln(args...))
 	}
 }
 
@@ -523,25 +473,7 @@ func Infof(template string, args ...interface{}) {
 
 func InfoAf(template string, args ...interface{}) {
 	if atom.Enabled(zap.InfoLevel) {
-		log := Caller(zap.InfoLevel) + fmt.Sprintf(template, args...)
-		if baseconf.GetBaseConf() != nil && !global.IsCloud {
-			SaveToRedis(log)
-		}
-		if IsArgsTooLang(zap.InfoLevel, log) {
-			return
-		}
-		sugar.Infof(log)
-
-	}
-}
-
-func PushLog2Chat(url, title, text string) {
-	var result interface{}
-	text = fmt.Sprintf("server: [%s]\ngate: [%s]\nlog: %s\n", global.HostName, global.GateWay, text)
-	msg := &FeishuMsg{MsgType: "post", Content: FeishuContent{Post: FeishuZh_cn{Zh_cn: FeishuTitle{Title: title, Content: [][]FeishuTitleContent{[]FeishuTitleContent{FeishuTitleContent{Tag: "text", Text: text}}}}}}}
-	err := http.Post(url, msg, &result, nil)
-	if err != nil {
-		fmt.Println(err)
+		writeLog(zap.InfoLevel, Caller(zap.InfoLevel)+fmt.Sprintf(template, args...))
 	}
 }
 
