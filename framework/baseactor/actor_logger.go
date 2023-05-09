@@ -7,10 +7,6 @@ import (
 	"gitlab.musadisca-games.com/wangxw/musae/framework/logger"
 )
 
-func NewActorLogger(actor actor.Server, handler string) *ActorLogger {
-	return &ActorLogger{a: actor, h: handler}
-}
-
 type ActorLogger struct {
 	a actor.Server
 	h string

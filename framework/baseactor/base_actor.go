@@ -4,12 +4,22 @@ import (
 	"github.com/dapr/go-sdk/actor"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/base"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/logger"
+	"gitlab.musadisca-games.com/wangxw/musae/framework/service"
+	"gitlab.musadisca-games.com/wangxw/musae/framework/state"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/proto"
 )
 
 type RpcMethod struct {
 	Handler interface{}
 	Method  grpc.MethodDesc
+}
+
+type IBaseActor interface {
+	actor.Server
+	GetCache(mongoDbName service.MongoDbType, key string, msg proto.Message) (*state.KvTable, error)
+	Cache2Redis(mongoDbType service.MongoDbType, key string, value proto.Message) error
+	SaveMongoDB(mongoDbName service.MongoDbType, key string, value proto.Message) error
 }
 
 type BaseActor struct {
