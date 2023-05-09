@@ -15,7 +15,8 @@ type RpcMethod struct {
 type BaseActor struct {
 	actor.ServerImplBase
 	base.BaseService
-	//actor.ServerImplBase
+	ActorLogger
+
 	MsgFunc    map[int32]base.FProtoMsgHandler
 	RpcMethods map[string]*RpcMethod
 }
