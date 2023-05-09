@@ -1,6 +1,7 @@
 package baseactor
 
 import (
+	"github.com/dapr/go-sdk/actor"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/base"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/logger"
 	"google.golang.org/grpc"
@@ -12,6 +13,7 @@ type RpcMethod struct {
 }
 
 type BaseActor struct {
+	actor.ServerImplBase
 	base.BaseService
 	//actor.ServerImplBase
 	MsgFunc    map[int32]base.FProtoMsgHandler
