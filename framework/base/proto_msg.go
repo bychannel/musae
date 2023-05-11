@@ -61,8 +61,8 @@ func (e *RpcError) Error() string {
 
 type FProtoMsgHandler = func(ctx context.Context, in *ProtoMsg) (proto.Message, error, int32)
 
-func PackProtoMsg(cmd int32, uid string, roleId uint64, uaid string, data []byte, appId string) ([]byte, error) {
-	msg := &ProtoMsg{MsgId: cmd, UserId: uid, RoleId: roleId, UAID: uaid, Data: data, AppId: appId}
+func PackProtoMsg(cmd int32, uid string, roleId uint64, uaid string, data []byte, appId string, uids []string) ([]byte, error) {
+	msg := &ProtoMsg{MsgId: cmd, UserId: uid, RoleId: roleId, UAID: uaid, Data: data, AppId: appId, Uids: uids}
 	return proto.Marshal(msg)
 }
 
