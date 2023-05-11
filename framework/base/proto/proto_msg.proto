@@ -14,4 +14,5 @@ message ProtoMsg
   int32  errCode= 7;  // err code
   uint32 GUID= 8;     // guid
   string topic= 9;    //message pubSub Topic
+  repeated string uids= 10;    //message broadcast to user list
 }
