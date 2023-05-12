@@ -10,7 +10,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/base"
-	"gitlab.musadisca-games.com/wangxw/musae/framework/global"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/logger"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/metrics"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/tcpx"
@@ -43,15 +42,15 @@ const (
 
 type Service struct {
 	base.BaseService
-	AppId        string //服务类型ID, 类型唯一,同一类型服务可以有多个实例
-	InAddr       string //服务端口
-	OutAddr      string //用户端口
-	WebAddr      string //web端口
-	GRPCPort     string //grpc端口
-	ActorType    string //Actor 类型, 使用于Actor服务器进程
-	ConfFile     string //配置文件
-	HasPriTopic  bool   //是否订阅私有主题
-	PrivateTopic string //私有主题
+	AppId        string   //服务类型ID, 类型唯一,同一类型服务可以有多个实例
+	InAddr       string   //服务端口
+	OutAddr      string   //用户端口
+	WebAddr      string   //web端口
+	GRPCPort     string   //grpc端口
+	Actors       []string //Actor 类型, 在Actor服务器进程上启动
+	ConfFile     string   //配置文件
+	HasPriTopic  bool     //是否订阅私有主题
+	PrivateTopic string   //私有主题
 	svc          common.Service
 	tcp          *tcpx.TcpX
 	http         *web.HttpServer
@@ -68,7 +67,7 @@ type Service struct {
 	OnEventHandler   base.FEventHandler   //订阅事件
 	OnInvokeHandler  base.FInvokeHandler  //服务调用
 	OnBindHandler    base.FBindingHandler //输入流事件
-	ActorFactory     base.FActorFactory   //Actor微服务创建工厂
+	ActorFactory     []base.FActorFactory //Actor微服务创建工厂
 	OnRegisterMetric metrics.RegisterMetricFunc
 	OnCfgCenterCB    dapr.ConfigurationHandleFunction
 	OnCronEveryHour  base.OnCronEveryHour
@@ -107,18 +106,21 @@ func (s *Service) ImpActorStub(actorStub actor.Client, opt ...config.Option) {
 	s.Daprc.ImplActorClientStub(actorStub, opt...)
 }
 
-func (s *Service) GetActorType() string {
-	return s.ActorType
+func (s *Service) GetActors() []string {
+	return s.Actors
 }
 
-func (s *Service) SetActorFactory(fn base.FActorFactory) {
-	s.ActorFactory = fn
-
+func (s *Service) RegisterActorFactory(fn ...base.FActorFactory) {
+	for _, factory := range fn {
+		s.ActorFactory = append(s.ActorFactory, factory)
+	}
 }
 
 func (s *Service) GracefulStop() {
-	if s.ActorFactory != nil {
-		runtime.GetActorRuntimeInstance().KillAllActors(global.UserActorType)
+	if len(s.ActorFactory) > 0 {
+		for _, actor := range s.Actors {
+			runtime.GetActorRuntimeInstance().KillAllActors(actor)
+		}
 	}
 	if err := s.svc.GracefulStop(); err != nil {
 		logger.Error("[service] GracefulStop error:", err)

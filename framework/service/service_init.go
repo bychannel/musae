@@ -216,16 +216,17 @@ func (s *Service) initSvc() error {
 	}); err != nil {
 		return err
 	}
+	logger.Debugf("s.ActorFactory, %v", s.ActorFactory)
 
-	if s.ActorFactory != nil {
-		s.svc.RegisterActorImplFactory(s.ActorFactory,
+	for _, factory := range s.ActorFactory {
+		s.svc.RegisterActorImplFactory(factory,
 			config.WithActorIdleTimeout(fmt.Sprintf("%ss", baseconf.GetBaseConf().UserActorGCTime)), //600s
 			config.WithActorScanInterval(baseconf.GetBaseConf().UserActorGCScan),                    //10s
 			config.WithDrainOngingCallTimeout(baseconf.GetBaseConf().UserActorGCScan),               //10s
-			config.WithDrainBalancedActors(true),
-		)
+			config.WithDrainBalancedActors(true))
 		logger.Info("[service], init ActorFactory success")
 	}
+
 	return nil
 }
 

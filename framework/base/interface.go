@@ -31,8 +31,8 @@ type IServer interface {
 	State() PState
 	SetState(state PState)
 	GetAppID() string
-	GetActorType() string
-	SetActorFactory(fn FActorFactory)
+	GetActors() []string
+	RegisterActorFactory(fn ...FActorFactory)
 }
 
 type IProcess interface {

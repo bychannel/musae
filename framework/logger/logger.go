@@ -247,7 +247,9 @@ func writeLog(l zapcore.Level, str string) {
 	if baseconf.GetBaseConf() == nil {
 		return
 	}
-
+	if !global.IsCloud {
+		SaveToRedis(str)
+	}
 	maxLen := baseconf.GetBaseConf().LogMaxLen
 	strLen := len(str)
 	if maxLen > 0 && strLen > maxLen {
@@ -259,6 +261,7 @@ func writeLog(l zapcore.Level, str string) {
 			} else {
 				fragmentStr = str[fragmentNum*maxLen : strLen]
 			}
+			fmt.Println(fragmentStr)
 			switch l {
 			case zap.DebugLevel:
 				sugar.Debug(fragmentStr)
@@ -271,9 +274,10 @@ func writeLog(l zapcore.Level, str string) {
 			case zap.FatalLevel:
 				sugar.Fatal(fragmentStr)
 			}
-			fmt.Println(fragmentStr)
+
 		}
 	} else {
+		fmt.Println(str)
 		switch l {
 		case zap.DebugLevel:
 			sugar.Debug(str)
@@ -286,11 +290,7 @@ func writeLog(l zapcore.Level, str string) {
 		case zap.FatalLevel:
 			sugar.Fatal(str)
 		}
-		fmt.Println(str)
-	}
 
-	if !global.IsCloud {
-		SaveToRedis(str)
 	}
 }
 
