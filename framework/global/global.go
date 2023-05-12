@@ -11,5 +11,7 @@ const (
 	SVC_INVOKE_TIMEOUT = 5  //服务调用超时
 	DB_INVOKE_TIMEOUT  = 5  //DB调用超时
 
-	UserActorType = "UserActor" // UserActor 类型
+	UserActorType  = "UserActor"  // UserActor 类型
+	SceneActorType = "SceneActor" // SceneActor 类型
+	ChatActorType  = "ChatActor"  // ChatActor 类型
 )

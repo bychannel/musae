@@ -46,12 +46,14 @@ const (
 	GateConnCount GaugeType = "GateConnCount" // PubSub count
 
 	// histogram
-	SrvInvokeDelayHist  HistogramType = "SrvInvokeDelayHist"  // srv invoke delay histogram
-	UserInvokeDelayHist HistogramType = "UserInvokeDelayHist" // user invoke delay histogram
-	RedisRDelayHist     HistogramType = "RedisRDelayHist"     // redis r delay histogram
-	RedisWDelayHist     HistogramType = "RedisWDelayHist"     // redis w delay histogram
-	MongoRDelayHist     HistogramType = "MongoRDelayHist"     // redis r delay histogram
-	MongoWDelayHist     HistogramType = "MongoWDelayHist"     // redis r delay histogram
+	SrvInvokeDelayHist   HistogramType = "SrvInvokeDelayHist"   // srv invoke delay histogram
+	UserInvokeDelayHist  HistogramType = "UserInvokeDelayHist"  // user invoke delay histogram
+	SceneInvokeDelayHist HistogramType = "SceneInvokeDelayHist" // user invoke delay histogram
+	ChatInvokeDelayHist  HistogramType = "ChatInvokeDelayHist"  // user invoke delay histogram
+	RedisRDelayHist      HistogramType = "RedisRDelayHist"      // redis r delay histogram
+	RedisWDelayHist      HistogramType = "RedisWDelayHist"      // redis w delay histogram
+	MongoRDelayHist      HistogramType = "MongoRDelayHist"      // redis r delay histogram
+	MongoWDelayHist      HistogramType = "MongoWDelayHist"      // redis r delay histogram
 
 	GuideDelayHist HistogramType = "GuideDelayHist" // guide delay histogram
 
@@ -126,6 +128,8 @@ func RegisterMetrics() {
 
 	RegisterHistogram(SrvInvokeDelayHist, nil, Invoke)
 	RegisterHistogram(UserInvokeDelayHist, nil, Invoke)
+	RegisterHistogram(SceneInvokeDelayHist, nil, Invoke)
+	RegisterHistogram(ChatInvokeDelayHist, nil, Invoke)
 	RegisterHistogram(RedisRDelayHist, nil, Redis)
 	RegisterHistogram(RedisWDelayHist, nil, Redis)
 	RegisterHistogram(MongoRDelayHist, nil, Mongo)
