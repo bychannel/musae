@@ -17,11 +17,11 @@ func GetIllegalWordMgr() *IllegalWordsSearch {
 }
 
 // 加载屏蔽词
-func LoadWordCfg(fileName string) {
+func LoadWordCfg(fileName string) error {
 	// 读取文件内容
 	f, err := excelize.OpenFile(fileName)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	defer func() {
 		// Close the spreadsheet.
@@ -32,7 +32,7 @@ func LoadWordCfg(fileName string) {
 
 	rows, err := f.GetRows("Sheet1")
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	temp := make([]string, 0)
@@ -45,4 +45,5 @@ func LoadWordCfg(fileName string) {
 
 	// 初始化屏蔽词mgr
 	GetIllegalWordMgr().SetKeywords(temp)
+	return nil
 }
