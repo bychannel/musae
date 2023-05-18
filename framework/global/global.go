@@ -1,13 +1,13 @@
 package global
 
-var AppID string          // 服务器标识
-var HostName string       // 系统主机名
-var IsCloud bool          // 是否云环境
-var SID int64             // 服务ID
-var GateWay string        // 网关地址
-var UserActorCount int32  // UserActor数量
-var SceneActorCount int32 // UserActor数量
-var ChatActorCount int32  // UserActor数量
+var AppID string         // 服务器标识
+var HostName string      // 系统主机名
+var IsCloud bool         // 是否云环境
+var SID int64            // 服务ID
+var GateWay string       // 网关地址
+var UserActorCount int32 // UserActor数量
+var RoomActorCount int32 // UserActor数量
+var ChatActorCount int32 // UserActor数量
 
 const (
 	//server appid
@@ -22,7 +22,7 @@ const (
 	BATTLE_SVC = "battle"
 
 	UserActorType   = "UserActor"   // UserActor 类型
-	SceneActorType  = "SceneActor"  // SceneActor 类型
+	RoomActorType   = "RoomActor"   // RoomActor 类型
 	ChatActorType   = "ChatActor"   // ChatActor 类型
 	CenterActorType = "CenterActor" // CenterActor 类型
 )

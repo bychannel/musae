@@ -270,7 +270,7 @@ func (h *BaseHandler) Cache2Redis(isImm ...bool) error {
 	if _isCommit2Redis(isImm...) {
 		//mongoDbName, dbKey, dbData := h.GetPlayerDataKV()
 		dbType, dbKey, dbVal := h.ChildHandler.DBTable()
-		err := h.actor.Cache2Redis(dbType, dbKey, dbVal)
+		err := h.actor.Cache2Redis(dbType, h.actor.ID(), dbKey, dbVal)
 		if err != nil {
 			return err
 		}

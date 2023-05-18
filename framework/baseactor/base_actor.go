@@ -18,7 +18,7 @@ type RpcMethod struct {
 type IBaseActor interface {
 	actor.Server
 	GetCache(mongoDbName service.MongoDbType, key string, msg proto.Message) (*state.KvTable, error)
-	Cache2Redis(mongoDbType service.MongoDbType, key string, value proto.Message) error
+	Cache2Redis(mongoDbType service.MongoDbType, uaid string, key string, value proto.Message) error
 	SaveMongoDB(mongoDbName service.MongoDbType, key string, value proto.Message) error
 }
 
@@ -26,6 +26,9 @@ type BaseActor struct {
 	actor.ServerImplBase
 	base.BaseService
 	ActorLogger
+
+	// 延迟落库
+	HandlersMap map[service.MongoDbType][]IBaseHandler
 
 	MsgFunc    map[int32]base.FProtoMsgHandler
 	RpcMethods map[string]*RpcMethod
@@ -54,4 +57,13 @@ func (s *BaseActor) RegisterRpcMethod(h interface{}, service *grpc.ServiceDesc) 
 		}
 	}
 
+}
+
+func (s *BaseActor) KeepHandler(ib IBaseHandler) {
+	dbType, _, _ := ib.DBTable()
+	if _, ok := s.HandlersMap[dbType]; !ok {
+		s.HandlersMap[dbType] = make([]IBaseHandler, 0)
+	}
+
+	s.HandlersMap[dbType] = append(s.HandlersMap[dbType], ib)
 }
