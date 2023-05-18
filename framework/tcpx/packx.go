@@ -13,6 +13,8 @@ import (
 	"reflect"
 )
 
+var KEEP_PACK_SIZE int32 = 4
+
 // tcpx's tool to help build expected stream for communicating
 type Packx struct {
 	Marshaller Marshaller
@@ -210,7 +212,7 @@ func LengthOf(stream []byte) (int32, error) {
 		return 0, errors.New(fmt.Sprintf("stream lenth should be bigger than 4"))
 	}
 	length := binary.BigEndian.Uint32(stream[0:4])
-	return int32(length), nil
+	return int32(length) + KEEP_PACK_SIZE, nil
 }
 
 // Header length of a stream received
@@ -507,8 +509,8 @@ func UnpackWithMarshaller(stream []byte, dest interface{}, marshaller Marshaller
 
 	logger.Debugf("stream====>>> %v", stream)
 	// 包长
-	length := binary.BigEndian.Uint32(stream[0:4])
-	stream = stream[0 : length+4]
+	length := binary.BigEndian.Uint32(stream[0:KEEP_PACK_SIZE])
+	stream = stream[0 : length+uint32(KEEP_PACK_SIZE)]
 	// messageID
 	messageID := binary.BigEndian.Uint32(stream[4:8])
 	// reqIdx
@@ -669,7 +671,7 @@ func readUntil(reader io.Reader, buf []byte) error {
 func PackWithMarshallerAndBody(message Message, body []byte) ([]byte, error) {
 	//var e error
 	// 包体长度
-	var lengthBuf = make([]byte, 4)
+	var lengthBuf = make([]byte, KEEP_PACK_SIZE)
 	// 包头部分
 	var messageIDBuf = make([]byte, 4)
 	var errCodeBuf = make([]byte, 4)
@@ -730,11 +732,12 @@ func PackWithMarshallerAndBody(message Message, body []byte) ([]byte, error) {
 	//Logger.Println(fmt.Sprintf("发送, crc 长度 :%d", crcLen))
 	binary.BigEndian.PutUint32(crcBuf, crcLen)
 
-	totalLen := 4 + // + totalLenSize
+	totalLen :=
+		//4 + // + totalLenSize	（记录包体长度的int，不记录到整个包体中）
 		4 + //  + cmdIdSize
-		4 + // + indexSize
-		4 + // + crcLenSize
-		uint32(len(content)) // + bodySize
+			4 + // + indexSize
+			4 + // + crcLenSize
+			uint32(len(content)) // + bodySize
 
 	//Logger.Println(fmt.Sprintf("发送, 数据长度 :%d", totalLen))
 	binary.BigEndian.PutUint32(lengthBuf, totalLen)
