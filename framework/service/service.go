@@ -14,6 +14,7 @@ import (
 	"gitlab.musadisca-games.com/wangxw/musae/framework/metrics"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/tcpx"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/web"
+	"sync"
 	"time"
 )
 
@@ -42,15 +43,16 @@ const (
 
 type Service struct {
 	base.BaseService
-	AppId        string   //服务类型ID, 类型唯一,同一类型服务可以有多个实例
-	InAddr       string   //服务端口
-	OutAddr      string   //用户端口
-	WebAddr      string   //web端口
-	GRPCPort     string   //grpc端口
-	Actors       []string //Actor 类型, 在Actor服务器进程上启动
-	ConfFile     string   //配置文件
-	HasPriTopic  bool     //是否订阅私有主题
-	PrivateTopic string   //私有主题
+	AppId        string    //服务类型ID, 类型唯一,同一类型服务可以有多个实例
+	InAddr       string    //服务端口
+	OutAddr      string    //用户端口
+	WebAddr      string    //web端口
+	GRPCPort     string    //grpc端口
+	Actors       []string  //Actor 类型, 在Actor服务器进程上启动
+	ConfFile     string    //配置文件
+	HasPriTopic  bool      //是否订阅私有主题
+	PrivateTopic string    //私有主题
+	Players      *sync.Map //在线用户
 	svc          common.Service
 	tcp          *tcpx.TcpX
 	http         *web.HttpServer
