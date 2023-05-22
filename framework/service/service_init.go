@@ -137,7 +137,7 @@ func (s *Service) initRedis() error {
 			Addrs: []string{
 				baseconf.GetBaseConf().RedisConf.Addr,
 			},
-			Password:        baseconf.GetBaseConf().RedisConf.PassWord,
+			Password:        baseconf.GetBaseConf().RedisConf.Password,
 			DialTimeout:     100 * time.Millisecond,
 			ReadTimeout:     100 * time.Millisecond,
 			WriteTimeout:    100 * time.Millisecond,
@@ -149,6 +149,7 @@ func (s *Service) initRedis() error {
 	} else {
 		opts = &redis.Options{
 			Addr:            baseconf.GetBaseConf().RedisConf.AddrDev,
+			Password:        baseconf.GetBaseConf().RedisConf.Password,
 			DialTimeout:     100 * time.Millisecond,
 			ReadTimeout:     100 * time.Millisecond,
 			WriteTimeout:    100 * time.Millisecond,

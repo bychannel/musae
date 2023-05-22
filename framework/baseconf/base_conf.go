@@ -4,7 +4,7 @@ type RedisConf struct {
 	Addr            string `json:"addr"`    // ip:port
 	AddrDev         string `json:"addrDev"` // dev ip:port
 	UserName        string `json:"userName"`
-	PassWord        string `json:"passWord"`
+	Password        string `json:"password"`
 	DB              int    `json:"db"`
 	MaxRetries      int    `json:"maxRetries"`      // 最大重试次数
 	MinRetryBackoff int    `json:"minRetryBackoff"` // 重试最小backoff
