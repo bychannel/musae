@@ -28,6 +28,7 @@ const (
 	RoomActorType   = "RoomActor"   // RoomActor 类型
 	ChatActorType   = "ChatActor"   // ChatActor 类型
 	CenterActorType = "CenterActor" // CenterActor 类型
+	MailActorType   = "MailActor"   // MailActor 类型
 )
 
 const (

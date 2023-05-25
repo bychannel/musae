@@ -68,6 +68,8 @@ type BaseConf struct {
 	RedisLogKey           string  `json:"redisLogKey"`           //redis log key
 	FeishuRobot           string  `json:"feishuRobot"`           //日志推送到飞书聊天群
 	DelayLogLimit         int64   `json:"delayLogLimit"`         //耗时收集日志阈值
+	MailActorMin          int32   `json:"mailActorMin"`          //邮件actor最小启用数量
+	MailActorPercent      int32   `json:"mailActorPercent"`      //邮件Actor启用数量万分比
 	//DefaultEncrypt      string `json:"defaultEncrypt"`      //默认的秘钥
 	RedisConf RedisConf `json:"RedisConf"`
 	SpChars   string    `json:"spChars"` // 特殊字符
