@@ -32,6 +32,7 @@ type BaseActor struct {
 
 	MsgFunc    map[int32]base.FProtoMsgHandler
 	RpcMethods map[string]*RpcMethod
+	ActorType  string
 }
 
 func (s *BaseActor) RegisterProtoHandler(messageId int32, handler base.FProtoMsgHandler) {
@@ -66,4 +67,8 @@ func (s *BaseActor) KeepHandler(ib IBaseHandler) {
 	}
 
 	s.HandlersMap[dbType] = append(s.HandlersMap[dbType], ib)
+}
+
+func (s *BaseActor) Type() string {
+	return s.ActorType
 }
