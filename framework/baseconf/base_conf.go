@@ -33,6 +33,7 @@ type BaseConf struct {
 	ServerId              string  `json:"serverId"`              //服务器ID
 	ServerName            string  `json:"serverName"`            //服务器名称
 	AccTokenTTL           int     `json:"accTokenTTL"`           //账号Token有效时长
+	RoomTokenTTL          int     `json:"roomTokenTTL"`          //room的Token有效时长
 	ActorCountInterval    int     `json:"actorCountInterval"`    //actor数量更新间隔
 	LogLevel              string  `json:"logLevel"`              //日志等级debug、info、warn、error、fatal
 	LogDir                string  `json:"logDir"`                //日志输出目录,子目录程序日志[log],埋点日志[dlog],指标日志[mlog]
