@@ -2,6 +2,7 @@ package process
 
 import (
 	"gitlab.musadisca-games.com/wangxw/musae/framework/base"
+	"gitlab.musadisca-games.com/wangxw/musae/framework/global"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/logger"
 	"os"
 	"os/signal"
@@ -129,6 +130,6 @@ func (p *Process) Main() {
 		}
 	}()
 	p.srv.SetState(base.PState_Running)
-	logger.Infof("[process] run success, %s", p.srv.GetAppID())
+	logger.Infof("server run success, appid:%s, version:%s, rolling:%s", global.AppID, global.APP_VERSION, global.ROLLING_VERSION)
 	p.srv.Main()
 }
