@@ -11,6 +11,14 @@ type RedisConf struct {
 	MaxRetryBackoff int    `json:"maxRetryBackoff"` // 重试最大backoff
 }
 
+type ESConf struct {
+	Addr     []string `json:"addr"`    // http://ip:port
+	AddrDev  string   `json:"addrDev"` // dev ip:port
+	UserName string   `json:"userName"`
+	Password string   `json:"password"`
+	Timeout  int      `json:"timeout"`
+}
+
 type BaseConf struct {
 	IsDebug               bool    `json:"debug"`
 	Protocol              string  `json:"protocol"`              // app-protocol, http or grpc
@@ -72,6 +80,7 @@ type BaseConf struct {
 	MailActorPercent      int32   `json:"mailActorPercent"`      //邮件Actor启用数量万分比
 	//DefaultEncrypt      string `json:"defaultEncrypt"`      //默认的秘钥
 	RedisConf RedisConf `json:"RedisConf"`
+	ESConf    ESConf    `json:"ESConf"`
 	SpChars   string    `json:"spChars"` // 特殊字符
 	CfgKeys   []string  `json:"cfgKeys"` // 配置中心keys
 }
