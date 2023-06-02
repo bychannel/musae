@@ -98,6 +98,11 @@ func (s *Service) InitBase() error {
 		logger.Fatal("[service], initRedis error: %v", err)
 		return err
 	}
+
+	if err := s.initES(); err != nil {
+		logger.Fatal("[service], initES error: %v", err)
+		return err
+	}
 	logger.Debug("[service] initRedis success")
 
 	logger.Info("[service] initNet success")

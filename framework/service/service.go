@@ -7,6 +7,7 @@ import (
 	"github.com/dapr/go-sdk/actor/runtime"
 	dapr "github.com/dapr/go-sdk/client"
 	"github.com/dapr/go-sdk/service/common"
+	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/base"
@@ -58,6 +59,7 @@ type Service struct {
 	http         *web.HttpServer
 	Redis        *redis.Client
 	RedisCluster *redis.ClusterClient
+	ES           *elasticsearch.TypedClient
 	state        base.PState
 
 	OnPreInit        base.FPreInit        //服务框架初始化之前调用,rpc,http 注册,dapr client 可用
