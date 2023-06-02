@@ -16,11 +16,11 @@ type GUID_TYPE string
 
 const (
 	GUID_ACCOUNT  GUID_TYPE = "GUID_ACCOUNT"  // account id
-	GUID_ROLE     GUID_TYPE = "GUID_ROLE"     // role id
+	GUID_PLAYER   GUID_TYPE = "GUID_PLAYER"   // 玩家id,仅用来生成PlayerID
 	GUID_EQUIP    GUID_TYPE = "GUID_EQUIP"    // 装备
 	GUID_BUILDING GUID_TYPE = "GUID_BUILDING" // 建筑
-	GUID_PLAYER   GUID_TYPE = "GUID_PLAYER"   // 玩家装备、道具、资源
 	GUID_MAIL     GUID_TYPE = "GUID_MAIL"     // 邮件id
+	GUID_EVENT    GUID_TYPE = "GUID_EVENT"    // 事件id
 	GUID_TOPIC    GUID_TYPE = "GUID_TOPIC"    // 主题订阅id
 	GUID_LOG      GUID_TYPE = "GUID_LOG"      // 日志id
 )

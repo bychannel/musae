@@ -12,12 +12,12 @@ import (
 
 func (s *Service) DBNext(name string, delta uint64) (uint64, error) {
 	ctx := context.Background()
-	ok, err := s.TryLock(s.AppId, name, LOCK_TTL_SEC)
+	/*ok, err := s.TryLock(s.AppId, name, LOCK_TTL_SEC)
 	defer s.UnLock(s.AppId, name)
 	if !ok || err != nil {
 		logger.Errorf("DBNext TryLock err: %v, %v, %+v", err, name, s.AppId)
 		return 0, err
-	}
+	}*/
 	var f context.CancelFunc
 	ctx, f = context.WithTimeout(ctx, global.DB_INVOKE_TIMEOUT*time.Second)
 	defer f()
@@ -52,6 +52,7 @@ func (s *Service) DBNext(name string, delta uint64) (uint64, error) {
 		logger.Errorf("DBNext  SaveState err: %v, %v, %+v", err, name, item)
 		return 0, err
 	}
+	logger.Debugf("GUIDNext, curMax:%v, delta:%v, newMax:%v", curMax, delta, newMax)
 	return newMax, nil
 }
 
