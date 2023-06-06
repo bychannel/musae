@@ -6,6 +6,9 @@ type RedisConf struct {
 	UserName        string `json:"userName"`
 	Password        string `json:"password"`
 	DB              int    `json:"db"`
+	DialTimeout     int    `json:"dialTimeout"`     // 连接超时
+	ReadTimeout     int    `json:"readTimeout"`     // 读超时
+	WriteTimeout    int    `json:"writeTimeout"`    // 写超时
 	MaxRetries      int    `json:"maxRetries"`      // 最大重试次数
 	MinRetryBackoff int    `json:"minRetryBackoff"` // 重试最小backoff
 	MaxRetryBackoff int    `json:"maxRetryBackoff"` // 重试最大backoff
