@@ -293,8 +293,8 @@ github.com/stretchr/testify v1.8.0/go.mod h1:yNjHg4UonilssWZ8iaSj1OCr/vHnekPRkoO
 github.com/ugorji/go v1.2.7/go.mod h1:nF9osbDWLy6bDVv/Rtoh6QgnvNDpmCalQV5urGCCS6M=
 github.com/ugorji/go/codec v1.2.7 h1:YPXUKf7fYbp/y8xloBqZOw2qaVggbfwMlI8WM3wZUJ0=
 github.com/ugorji/go/codec v1.2.7/go.mod h1:WGN1fab3R1fzQlVQTkfxVtIBhWDRqOviHU95kRgeqEY=
-github.com/wXwcoder/go-sdk v1.6.7 h1:Nm9VthnPq2TGAIjO70QafDQ3b34B3GKtJ8oguTQYTJg=
-github.com/wXwcoder/go-sdk v1.6.7/go.mod h1:KLQBltoD9K0w5hKTihdcyg9Epob9gypwL5dYcQzPro4=
+github.com/wXwcoder/go-sdk v1.6.8 h1:Ig/sTJaGqiCWA3VA7ORRnb/ULjT/xghgN2xcACl0nsY=
+github.com/wXwcoder/go-sdk v1.6.8/go.mod h1:KLQBltoD9K0w5hKTihdcyg9Epob9gypwL5dYcQzPro4=
 github.com/xuri/efp v0.0.0-20220603152613-6918739fd470 h1:6932x8ltq1w4utjmfMPVj09jdMlkY0aiA6+Skbtl3/c=
 github.com/xuri/efp v0.0.0-20220603152613-6918739fd470/go.mod h1:ybY/Jr0T0GTCnYjKqmdwxyxn2BQf2RcQIIvex5QldPI=
 github.com/xuri/excelize/v2 v2.7.0 h1:Hri/czwyRCW6f6zrCDWXcXKshlq4xAZNpNOpdfnFhEw=

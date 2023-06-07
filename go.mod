@@ -69,6 +69,6 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace github.com/dapr/go-sdk v1.6.0 => github.com/wXwcoder/go-sdk v1.6.7 // indirect
+replace github.com/dapr/go-sdk v1.6.0 => github.com/wXwcoder/go-sdk v1.6.8 // indirect
 
 //replace github.com/dapr/go-sdk v1.6.0 => ../go-sdk
