@@ -13,6 +13,7 @@ import (
 	"github.com/pkg/errors"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/baseconf"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/global"
+	"gitlab.musadisca-games.com/wangxw/musae/framework/logger"
 	"net/http"
 	"time"
 )
@@ -125,6 +126,7 @@ func (s *Service) ESMultiSearch(dbName string, matchMap map[string]string, range
 	req.Query = &types.Query{Bool: &types.BoolQuery{Must: query}} // 等值条件
 	req.Size = &hitSize                                           // 查询数量
 
+	logger.Debugf("ESMultiSearch 请求: %+v", query)
 	// 请求数据
 	res, err := s.ES.Search().Index(dbName).Request(req).Do(context.Background())
 	if err != nil {
