@@ -55,10 +55,11 @@ func (s *Service) SaveRedis(db RedisDbType, key string, table *state.KvTable, me
 		metrics.GaugeInc(metrics.RedisWErr)
 		return DB_ERROR_TIMEOUT
 	}
-	metrics.HistogramPut(metrics.RedisWDelayHist, time.Since(now).Milliseconds(), metrics.Redis)
+	delay := time.Since(now).Milliseconds()
+	metrics.HistogramPut(metrics.RedisWDelayHist, delay, metrics.Redis)
 	metrics.GaugeInc(metrics.RedisWCount)
 	metrics.GaugeAdd(metrics.RedisWSize, int64(dataLen))
-	logger.Debugf("saveRedis db:[%v], key:[%v], kvTable: %v, meta: %v", db, key, table.Str(), meta)
+	logger.Debugf("saveRedis db:[%v], key:[%v], Delay:[%v], kvTable: %v, meta: %v", db, key, delay, table.Str(), meta)
 	return nil
 }
 
@@ -78,7 +79,9 @@ func (s *Service) GetRedis(db RedisDbType, key string, meta map[string]string) (
 		return nil, DB_ERROR_TIMEOUT
 	}
 	logger.Debugf("getRedis db:[%v], key:[%v], len:[%v]", db, key, len(item.Value))
-	metrics.HistogramPut(metrics.RedisRDelayHist, time.Since(now).Milliseconds(), metrics.Redis)
+
+	delay := time.Since(now).Milliseconds()
+	metrics.HistogramPut(metrics.RedisRDelayHist, delay, metrics.Redis)
 	metrics.GaugeInc(metrics.RedisRCount)
 	// 初始状态
 	if len(item.Value) == 0 {
@@ -91,7 +94,7 @@ func (s *Service) GetRedis(db RedisDbType, key string, meta map[string]string) (
 		logger.Errorf("getRedis Unmarshal KvTable err: %v, %v, %+v", err, key, item)
 		return nil, DB_ERROR_UNMARSHAL
 	}
-	logger.Debugf("getRedis db:[%v], key:[%v], kvTable:%s", db, key, table.Str())
+	logger.Debugf("getRedis db:[%v], key:[%v], Delay:[%v], kvTable:%s", db, key, delay, table.Str())
 	return table, nil
 }
 
