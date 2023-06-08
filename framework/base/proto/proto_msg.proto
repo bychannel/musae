@@ -12,7 +12,7 @@ message ProtoMsg
   string UAID= 5;     //UserActor id
   bytes data= 6;      // proto Marshal data
   int32  errCode= 7;  // err code
-  uint32 GUID= 8;     // guid
+  uint32 reqIdx= 8;     // from client request index
   string topic= 9;    //message pubSub Topic
   repeated string uids= 10;    //message broadcast to user list
 }
