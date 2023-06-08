@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/core/search"
@@ -83,10 +84,8 @@ func (s *Service) ESGet(dbName, id string) (error, []byte) {
 //	@return *types.HitsMetadata
 func (s *Service) ESMultiSearch(dbName string, matchMap map[string]string, rangeMap map[string]RangeItem, hitSize int, random bool) (error, *types.HitsMetadata) {
 	var (
-		matchOpt = make(map[string]types.MatchQuery)
-		rangeOpt = make(map[string]types.RangeQuery)
-		query    = make([]types.Query, 0)
-		req      = &search.Request{}
+		query = make([]types.Query, 0)
+		req   = &search.Request{}
 	)
 
 	if len(matchMap) == 0 && len(rangeMap) == 0 {
@@ -96,19 +95,18 @@ func (s *Service) ESMultiSearch(dbName string, matchMap map[string]string, range
 	// 等值条件
 	if len(matchMap) > 0 {
 		for field, keyword := range matchMap {
-			matchOpt[field] = types.MatchQuery{Query: keyword}
+			query = append(query, types.Query{Match: map[string]types.MatchQuery{field: types.MatchQuery{Query: keyword}}})
 		}
-		query = append(query, types.Query{Match: matchOpt})
 	}
 	// 范围条件
 	if len(rangeMap) > 0 {
 		for field, kvItem := range rangeMap {
-			rangeOpt[field] = types.NumberRangeQuery{
-				Gte: (*types.Float64)(&kvItem.Min),
-				Lte: (*types.Float64)(&kvItem.Max),
-			}
+			tempItem := kvItem // 临时遍历，规避foreach取地址的bug
+			query = append(query, types.Query{Range: map[string]types.RangeQuery{field: types.NumberRangeQuery{
+				Gte: (*types.Float64)(&tempItem.Min),
+				Lte: (*types.Float64)(&tempItem.Max),
+			}}})
 		}
-		query = append(query, types.Query{Range: rangeOpt})
 	}
 
 	// 排序，随机配置
@@ -126,7 +124,8 @@ func (s *Service) ESMultiSearch(dbName string, matchMap map[string]string, range
 	req.Query = &types.Query{Bool: &types.BoolQuery{Must: query}} // 等值条件
 	req.Size = &hitSize                                           // 查询数量
 
-	logger.Debugf("ESMultiSearch 请求: %+v", query)
+	reqStr, _ := json.Marshal(req)
+	logger.Debugf("ESMultiSearch 请求: %s", string(reqStr))
 	// 请求数据
 	res, err := s.ES.Search().Index(dbName).Request(req).Do(context.Background())
 	if err != nil {
