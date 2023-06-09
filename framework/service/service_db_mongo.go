@@ -71,10 +71,6 @@ func (s *Service) SaveMongo(db MongoDbType, key string, table *state.KvTable, me
 		return DB_ERROR_MARSHAL
 	}
 
-	var (
-		startT = time.Now()
-	)
-
 	dataLen := len(table.Data)
 	ctx := context.Background()
 	now := time.Now()
@@ -94,16 +90,11 @@ func (s *Service) SaveMongo(db MongoDbType, key string, table *state.KvTable, me
 	metrics.HistogramPut(metrics.MongoWDelayHist, delay, metrics.Mongo)
 	metrics.GaugeInc(metrics.MongoWCount)
 	metrics.GaugeAdd(metrics.MongoWSize, int64(dataLen))
-	logger.Debugf("SaveMongo db:[%v], key:[%v], Delay:[%v], kvTable: %v", db, key, delay, table.Str())
-	logger.WarnDelayf(time.Since(startT).Milliseconds(), "SaveMongo")
+	logger.WarnDelayf(delay, "SaveMongo db:[%v], key:[%v], Delay:[%v], kvTable: %v", db, key, delay, table.Str())
 	return nil
 }
 
 func (s *Service) GetMongo(db MongoDbType, key string, meta map[string]string) (*state.KvTable, error) {
-	var (
-		startT = time.Now()
-	)
-
 	ctx := context.Background()
 	now := time.Now()
 	//item, err := s.Daprc.GetState(ctx, string(db), key, meta)
@@ -134,8 +125,7 @@ func (s *Service) GetMongo(db MongoDbType, key string, meta map[string]string) (
 		logger.Errorf("getMongo Unmarshal KvTable err: %v, %v, %+v", err, key, item)
 		return nil, DB_ERROR_UNMARSHAL
 	}
-	logger.Debugf("getMongo db:[%v], key:[%v], Delay:[%v], kvTable:%s", db, key, delay, table.Str())
-	logger.WarnDelayf(time.Since(startT).Milliseconds(), "SaveMongo")
+	logger.WarnDelayf(delay, "getMongo db:[%v], key:[%v], Delay:[%v], kvTable:%s", db, key, delay, table.Str())
 
 	return table, nil
 }
