@@ -6,9 +6,20 @@ type RedisConf struct {
 	UserName        string `json:"userName"`
 	Password        string `json:"password"`
 	DB              int    `json:"db"`
+	DialTimeout     int    `json:"dialTimeout"`     // 连接超时
+	ReadTimeout     int    `json:"readTimeout"`     // 读超时
+	WriteTimeout    int    `json:"writeTimeout"`    // 写超时
 	MaxRetries      int    `json:"maxRetries"`      // 最大重试次数
 	MinRetryBackoff int    `json:"minRetryBackoff"` // 重试最小backoff
 	MaxRetryBackoff int    `json:"maxRetryBackoff"` // 重试最大backoff
+}
+
+type ESConf struct {
+	Addr     []string `json:"addr"`    // http://ip:port
+	AddrDev  string   `json:"addrDev"` // dev ip:port
+	UserName string   `json:"userName"`
+	Password string   `json:"password"`
+	Timeout  int      `json:"timeout"`
 }
 
 type BaseConf struct {
@@ -33,6 +44,7 @@ type BaseConf struct {
 	ServerId              string  `json:"serverId"`              //服务器ID
 	ServerName            string  `json:"serverName"`            //服务器名称
 	AccTokenTTL           int     `json:"accTokenTTL"`           //账号Token有效时长
+	RoomTokenTTL          int     `json:"roomTokenTTL"`          //room的Token有效时长
 	ActorCountInterval    int     `json:"actorCountInterval"`    //actor数量更新间隔
 	LogLevel              string  `json:"logLevel"`              //日志等级debug、info、warn、error、fatal
 	LogDir                string  `json:"logDir"`                //日志输出目录,子目录程序日志[log],埋点日志[dlog],指标日志[mlog]
@@ -72,6 +84,7 @@ type BaseConf struct {
 	MailActorPercent      int32   `json:"mailActorPercent"`      //邮件Actor启用数量万分比
 	//DefaultEncrypt      string `json:"defaultEncrypt"`      //默认的秘钥
 	RedisConf RedisConf `json:"RedisConf"`
+	ESConf    ESConf    `json:"ESConf"`
 	SpChars   string    `json:"spChars"` // 特殊字符
 	CfgKeys   []string  `json:"cfgKeys"` // 配置中心keys
 }

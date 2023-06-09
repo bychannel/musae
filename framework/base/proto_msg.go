@@ -34,7 +34,8 @@ func (p *ProtoMsg) Unmarshal(m interface{}) error {
 }*/
 
 func (p *ProtoMsg) Str() string {
-	return fmt.Sprintf("ProtoMsg:{AppId:%v,MsgId:%v,UserId:%v,RoleId:%v,UAID:%v,Data:%v,ErrCode:%v,GUID:%v,Uids:%+v}", p.AppId, p.MsgId, p.UserId, p.RoleId, p.UAID, len(p.Data), p.ErrCode, p.GUID, p.Uids)
+	return fmt.Sprintf("ProtoMsg:{AppId:%v,MsgId:%v,Topic:%v,UserId:%v,RoleId:%v,UAID:%v,Data:%v,ErrCode:%v,ReqIdx:%v,Uids:%+v}",
+		p.AppId, p.MsgId, p.Topic, p.UserId, p.RoleId, p.UAID, len(p.Data), p.ErrCode, p.ReqIdx, p.Uids)
 }
 
 func (p *ProtoMsg) UnmarshalData(m proto.Message) error {

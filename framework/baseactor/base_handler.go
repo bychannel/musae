@@ -46,6 +46,8 @@ type IBaseHandler interface {
 	IsRedisDirty() bool
 	SetRedisDirty()
 	CleanRedisDirty()
+	SetSupportMini()
+	IsSupportMini() bool
 
 	// SaveDB 持久化数据
 	SaveDB(...bool) error
@@ -73,6 +75,7 @@ type BaseHandler struct {
 	isDirty      bool // actor生命周期内有过修改数据,则标记
 	isRedisDirty bool // 标记修改过的数据是否同步到redis缓存中
 	//isMongoDirty bool // 废弃
+	isSupportMini bool // 是否支持模拟模式
 
 	ChildHandler IBaseHandler // 具体的handler
 }
@@ -104,6 +107,14 @@ func (h *BaseHandler) SetRedisDirty() {
 
 func (h *BaseHandler) CleanRedisDirty() {
 	h.isRedisDirty = false
+}
+
+func (h *BaseHandler) SetSupportMini() {
+	h.isSupportMini = true
+}
+
+func (h *BaseHandler) IsSupportMini() bool {
+	return h.isSupportMini
 }
 
 // 加载玩家数据

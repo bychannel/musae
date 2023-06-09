@@ -212,7 +212,7 @@ func LengthOf(stream []byte) (int32, error) {
 		return 0, errors.New(fmt.Sprintf("stream lenth should be bigger than 4"))
 	}
 	length := binary.BigEndian.Uint32(stream[0:4])
-	return int32(length) + KEEP_PACK_SIZE, nil
+	return int32(length), nil
 }
 
 // Header length of a stream received
@@ -245,17 +245,17 @@ func BodyLengthOf(stream []byte) (int32, error) {
 }
 
 // request of order-index
-func ReqIndexOf(stream []byte) (int32, error) {
+func ReqIndexOf(stream []byte) (uint32, error) {
 	if len(stream) < 12 {
 		return 0, errors.New(fmt.Sprintf("stream lenth should be bigger than %d", 12))
 	}
 	reqIdx := binary.BigEndian.Uint32(stream[8:12])
 	logger.Debugf("----- reqIdx -----%d", reqIdx)
-	return int32(reqIdx), nil
+	return uint32(reqIdx), nil
 }
 
 // order-index length of a stream received
-func (packx Packx) ReqIndexLengthOf(stream []byte) (int32, error) {
+func (packx Packx) ReqIndexLengthOf(stream []byte) (uint32, error) {
 	return ReqIndexOf(stream)
 }
 
@@ -318,7 +318,7 @@ func (packx Packx) BodyBytesOf(stream []byte) ([]byte, error) {
 func Decrypt(stream []byte, secretKey string) ([]byte, error) {
 	logger.Debugf("----- 收到的数据 -----%v, secretKey:%s", stream, secretKey)
 	allLen, err := LengthOf(stream)
-	//logger.Debugf("----- allLen -----%d", allLen)
+	logger.Debugf("----- allLen -----%d", allLen)
 	if err != nil {
 		logger.Warnf(err.Error())
 		return nil, err
@@ -326,19 +326,19 @@ func Decrypt(stream []byte, secretKey string) ([]byte, error) {
 
 	// encrpt data
 	crcLen, err := CRCLengthOf(stream)
-	//logger.Debugf("----- crcLen -----%d", crcLen)
+	logger.Debugf("----- crcLen -----%d", crcLen)
 	if err != nil {
 		logger.Warnf(err.Error())
 		return nil, err
 	}
 
 	info := stream[:16]
-	cryptData := stream[16:allLen]
-	//logger.Debugf("----- cryptData -----%d", len(cryptData))
+	cryptData := stream[16 : allLen+KEEP_PACK_SIZE]
+	logger.Debugf("----- cryptData -----%d", len(cryptData))
 
 	// crc
 	myCRC := utils.GenerateCheckSum(cryptData)
-	//logger.Debugf("----- myCRC -----%d", myCRC)
+	logger.Debugf("----- myCRC -----%d", myCRC)
 	if int32(myCRC) != crcLen {
 		return nil, errors.New(fmt.Sprintf("Decrypt, CRC check faild, client crc:%d, server crc:%d", crcLen, myCRC))
 	}

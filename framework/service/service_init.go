@@ -98,6 +98,11 @@ func (s *Service) InitBase() error {
 		logger.Fatal("[service], initRedis error: %v", err)
 		return err
 	}
+
+	if err := s.initES(); err != nil {
+		logger.Fatal("[service], initES error: %v", err)
+		return err
+	}
 	logger.Debug("[service] initRedis success")
 
 	logger.Info("[service] initNet success")
@@ -138,9 +143,9 @@ func (s *Service) initRedis() error {
 				baseconf.GetBaseConf().RedisConf.Addr,
 			},
 			Password:        baseconf.GetBaseConf().RedisConf.Password,
-			DialTimeout:     100 * time.Millisecond,
-			ReadTimeout:     100 * time.Millisecond,
-			WriteTimeout:    100 * time.Millisecond,
+			DialTimeout:     time.Duration(baseconf.GetBaseConf().RedisConf.DialTimeout) * time.Millisecond,
+			ReadTimeout:     time.Duration(baseconf.GetBaseConf().RedisConf.ReadTimeout) * time.Millisecond,
+			WriteTimeout:    time.Duration(baseconf.GetBaseConf().RedisConf.WriteTimeout) * time.Millisecond,
 			MaxRetries:      baseconf.GetBaseConf().RedisConf.MaxRetries,
 			MinRetryBackoff: time.Duration(baseconf.GetBaseConf().RedisConf.MinRetryBackoff) * time.Millisecond,
 			MaxRetryBackoff: time.Duration(baseconf.GetBaseConf().RedisConf.MaxRetryBackoff) * time.Millisecond,
@@ -150,9 +155,9 @@ func (s *Service) initRedis() error {
 		opts = &redis.Options{
 			Addr:            baseconf.GetBaseConf().RedisConf.AddrDev,
 			Password:        baseconf.GetBaseConf().RedisConf.Password,
-			DialTimeout:     100 * time.Millisecond,
-			ReadTimeout:     100 * time.Millisecond,
-			WriteTimeout:    100 * time.Millisecond,
+			DialTimeout:     time.Duration(baseconf.GetBaseConf().RedisConf.DialTimeout) * time.Millisecond,
+			ReadTimeout:     time.Duration(baseconf.GetBaseConf().RedisConf.ReadTimeout) * time.Millisecond,
+			WriteTimeout:    time.Duration(baseconf.GetBaseConf().RedisConf.WriteTimeout) * time.Millisecond,
 			MaxRetries:      baseconf.GetBaseConf().RedisConf.MaxRetries,
 			MinRetryBackoff: time.Duration(baseconf.GetBaseConf().RedisConf.MinRetryBackoff) * time.Millisecond,
 			MaxRetryBackoff: time.Duration(baseconf.GetBaseConf().RedisConf.MaxRetryBackoff) * time.Millisecond,
