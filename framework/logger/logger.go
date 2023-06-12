@@ -122,20 +122,18 @@ func Init(logPath, fileName string) error {
 	}
 
 	var (
-		syncWriter zapcore.WriteSyncer
-		//bws              *zapcore.BufferedWriteSyncer
-		//bufSize          int
-		//bufFlushInterval time.Duration
+		core             zapcore.Core
+		syncWriter       zapcore.WriteSyncer
+		bufSize          int
+		bufFlushInterval time.Duration
 	)
 
-	//if baseconf.GetBaseConf() != nil {
-	//	bufSize = baseconf.GetBaseConf().LogBufSize * 1024
-	//	bufFlushInterval = time.Duration(baseconf.GetBaseConf().LogFlushInterval) * time.Second
-	//}
+	if baseconf.GetBaseConf() != nil {
+		bufSize = baseconf.GetBaseConf().LogBufSize * 1024
+		bufFlushInterval = time.Duration(baseconf.GetBaseConf().LogFlushInterval) * time.Second
+	}
 	if !global.IsCloud {
 		//fileName = fmt.Sprintf("%s-%v", fileName, os.Getpid())
-		//bufSize = 1 * 1024                 // 最小为1kb
-		//bufFlushInterval = 1 * time.Second // 最小为1s
 	}
 
 	if baseconf.GetBaseConf() != nil {
@@ -161,11 +159,6 @@ func Init(logPath, fileName string) error {
 			}
 			syncWriter = zapcore.AddSync(logWriter)
 		}
-		//bws = &zapcore.BufferedWriteSyncer{
-		//	WS:            syncWriter,
-		//	Size:          bufSize,
-		//	FlushInterval: bufFlushInterval,
-		//}
 	} else {
 		syncWriter = zapcore.AddSync(&lumberjack.Logger{
 			Filename:   filepath.Join(logPath, fileName+".log"),
@@ -174,14 +167,18 @@ func Init(logPath, fileName string) error {
 			MaxSize:    1024,
 			Compress:   false,
 		})
-		//bws = &zapcore.BufferedWriteSyncer{
-		//	WS:            syncWriter,
-		//	Size:          bufSize,
-		//	FlushInterval: bufFlushInterval,
-		//}
 	}
 
-	core := zapcore.NewCore(encoder, syncWriter, zap.DebugLevel)
+	if bufSize > 0 { // 启用缓冲批量写
+		bws := &zapcore.BufferedWriteSyncer{
+			WS:            syncWriter,
+			Size:          bufSize,
+			FlushInterval: bufFlushInterval,
+		}
+		core = zapcore.NewCore(encoder, bws, zap.DebugLevel)
+	} else {
+		core = zapcore.NewCore(encoder, syncWriter, zap.DebugLevel)
+	}
 	sugar = zap.New(core, zap.AddCaller()).Sugar()
 
 	return nil
