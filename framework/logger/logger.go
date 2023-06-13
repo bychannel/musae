@@ -369,8 +369,7 @@ func WarnDelayAf(delay int64, template string, args ...interface{}) {
 		writeLog(zap.WarnLevel, log)
 
 		if baseconf.GetBaseConf() != nil && baseconf.GetBaseConf().IsDebug && len(baseconf.GetBaseConf().FeishuRobot) > 0 {
-			// TODO 临时关闭
-			// PushLog2Chat(baseconf.GetBaseConf().FeishuRobot, "DELAY", log)
+			//PushLog2Chat(baseconf.GetBaseConf().FeishuRobot, "DELAY", log)
 		}
 		metrics.GaugeInc(metrics.WarnCount)
 	}
