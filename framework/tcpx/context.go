@@ -498,11 +498,11 @@ func (ctx *Context) GetCtxPerRequest(k interface{}) (interface{}, bool) {
 }
 
 // Reply to client using ctx's well-set Packx.Marshaller.
-func (ctx *Context) Reply(messageID int32, src interface{}) error {
+func (ctx *Context) Reply(messageID int32, errCode int32, src interface{}) error {
 	var buf []byte
 	var e error
 
-	buf, e = ctx.Packx.Pack(messageID, 0, src, ctx.GetEncryptKey())
+	buf, e = ctx.Packx.Pack(messageID, errCode, src, ctx.GetEncryptKey())
 	if e != nil {
 		return errorx.Wrap(e)
 	}
@@ -510,10 +510,10 @@ func (ctx *Context) Reply(messageID int32, src interface{}) error {
 }
 
 // Reply to client using ctx's well-set Packx.Marshaller.
-func (ctx *Context) ReplyWithBody(messageID int32, body []byte) error {
+func (ctx *Context) ReplyWithBody(messageID int32, errCode int32, body []byte) error {
 	var buf []byte
 	var e error
-	buf, e = ctx.Packx.PackWithBody(messageID, 0, body, ctx.GetEncryptKey())
+	buf, e = ctx.Packx.PackWithBody(messageID, errCode, body, ctx.GetEncryptKey())
 	if e != nil {
 		return errorx.Wrap(e)
 	}
@@ -749,7 +749,7 @@ func (ctx *Context) SendToUsername(username string, messageID int32, src interfa
 // Send to another conn via Context.
 // Make sure called `srv.WithBuiltInPool(true)`
 func (ctx *Context) SendToConn(anotherCtx *Context, messageID int32, src interface{}) error {
-	return anotherCtx.Reply(messageID, src)
+	return anotherCtx.Reply(messageID, 0, src)
 }
 
 func (ctx *Context) GetPoolRef() *ClientPool {

@@ -179,7 +179,7 @@ func (packx Packx) MessageIDOf(stream []byte) (int32, error) {
 // Use this to choose which struct for unpacking.
 func MessageIDOf(stream []byte) (int32, error) {
 	if len(stream) < 8 {
-		return 0, errors.New(fmt.Sprintf("stream lenth should be bigger than 8"))
+		return 0, errors.New(fmt.Sprintf("MessageIDOf stream lenth should be bigger than 8"))
 	}
 	//if len(stream) >= 12 {
 	//	cmdLen := binary.BigEndian.Uint32(stream[8:12])
@@ -209,7 +209,7 @@ func LengthOf(stream []byte) (int32, error) {
 	//}
 
 	if len(stream) < 4 {
-		return 0, errors.New(fmt.Sprintf("stream lenth should be bigger than 4"))
+		return 0, errors.New(fmt.Sprintf("LengthOf stream lenth should be bigger than 4"))
 	}
 	length := binary.BigEndian.Uint32(stream[0:4])
 	return int32(length), nil
@@ -223,7 +223,7 @@ func (packx Packx) HeaderLengthOf(stream []byte) (int32, error) {
 // Header length of a stream received
 func HeaderLengthOf(stream []byte) (int32, error) {
 	if len(stream) < 20 {
-		return 0, errors.New(fmt.Sprintf("stream lenth should be bigger than 20"))
+		return 0, errors.New(fmt.Sprintf("HeaderLengthOf stream lenth should be bigger than 20"))
 	}
 
 	headerLength := binary.BigEndian.Uint32(stream[16:20])
@@ -238,7 +238,7 @@ func (packx Packx) BodyLengthOf(stream []byte) (int32, error) {
 // Body length of a stream received
 func BodyLengthOf(stream []byte) (int32, error) {
 	if len(stream) < 24 {
-		return 0, errors.New(fmt.Sprintf("stream lenth should be bigger than %d", 24))
+		return 0, errors.New(fmt.Sprintf("BodyLengthOf stream lenth should be bigger than %d", 24))
 	}
 	bodyLength := binary.BigEndian.Uint32(stream[20:24])
 	return int32(bodyLength), nil
@@ -247,7 +247,7 @@ func BodyLengthOf(stream []byte) (int32, error) {
 // request of order-index
 func ReqIndexOf(stream []byte) (uint32, error) {
 	if len(stream) < 12 {
-		return 0, errors.New(fmt.Sprintf("stream lenth should be bigger than %d", 12))
+		return 0, errors.New(fmt.Sprintf("ReqIndexOf stream lenth should be bigger than %d", 12))
 	}
 	reqIdx := binary.BigEndian.Uint32(stream[8:12])
 	logger.Debugf("----- reqIdx -----%d", reqIdx)
@@ -262,7 +262,7 @@ func (packx Packx) ReqIndexLengthOf(stream []byte) (uint32, error) {
 // CRC length of a stream received
 func CRCLengthOf(stream []byte) (int32, error) {
 	if len(stream) < 16 {
-		return 0, errors.New(fmt.Sprintf("stream lenth should be bigger than %d", 16))
+		return 0, errors.New(fmt.Sprintf("CRCLengthOf stream lenth should be bigger than %d", 16))
 	}
 	bodyLength := binary.BigEndian.Uint32(stream[12:16])
 	return int32(bodyLength), nil
@@ -280,7 +280,7 @@ func HeaderBytesOf(stream []byte) ([]byte, error) {
 		return nil, e
 	}
 	if len(stream) < 16+int(headerLen) {
-		return nil, errors.New(fmt.Sprintf("stream lenth should be bigger than %d", 16+int(headerLen)))
+		return nil, errors.New(fmt.Sprintf("HeaderBytesOf stream lenth should be bigger than %d", 16+int(headerLen)))
 	}
 	header := stream[16 : 16+headerLen]
 	return header, nil
@@ -369,21 +369,30 @@ func BodyBytesOf(stream []byte) ([]byte, error) {
 		return nil, e
 	}
 
-	//if len(stream) >= 12 {
-	//	cmdId := binary.BigEndian.Uint32(stream[8:12])
+	//if len(stream) >= 8 {
+	//	cmdId := binary.BigEndian.Uint32(stream[4:8])
 	//	logger.Debugf("cmdId:%d", cmdId)
 	//}
+	//if len(stream) >= 12 {
+	//	cmdId := binary.BigEndian.Uint32(stream[8:12])
+	//	logger.Debugf("reqIdx:%d", cmdId)
+	//}
 	//if len(stream) >= 16 {
-	//	headerLength := binary.BigEndian.Uint32(stream[12:16])
-	//	logger.Debugf("headLen:%d", headerLength)
+	//	src := binary.BigEndian.Uint32(stream[12:16])
+	//	logger.Debugf("clientSrc:%d", src)
 	//}
 	//if len(stream) >= 20 {
-	//	bodyLen := binary.BigEndian.Uint32(stream[16:20])
-	//	logger.Debugf("bodyLen:%d", bodyLen)
+	//	headerLength := binary.BigEndian.Uint32(stream[16:20])
+	//	logger.Debugf("headerLength:%d", headerLength)
 	//}
+	//if len(stream) >= 24 {
+	//	bodyLength := binary.BigEndian.Uint32(stream[20:24])
+	//	logger.Debugf("bodyLength:%d", bodyLength)
+	//}
+	//logger.Debugf("stream:%d, headerLen:%d, bodyLen:%d", len(stream), int(headerLen), int(bodyLen))
 
 	if len(stream) < 24+int(headerLen)+int(bodyLen) {
-		return nil, errors.New(fmt.Sprintf("stream lenth should be bigger than %d", 24+int(headerLen)+int(bodyLen)))
+		return nil, errors.New(fmt.Sprintf("BodyBytesOf stream lenth should be bigger than %d", 24+int(headerLen)+int(bodyLen)))
 	}
 	body := stream[24+headerLen : 24+headerLen+bodyLen]
 
