@@ -17,11 +17,11 @@ func GetIllegalWordMgr() *IllegalWordsSearch {
 }
 
 // 加载屏蔽词
-func LoadWordCfg(fileName string) error {
+func LoadWordCfg(fileName string) (int, error) {
 	// 读取文件内容
 	f, err := excelize.OpenFile(fileName)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	defer func() {
 		// Close the spreadsheet.
@@ -30,20 +30,31 @@ func LoadWordCfg(fileName string) error {
 		}
 	}()
 
-	rows, err := f.GetRows("Sheet1")
+	rows, err := f.GetRows("dirtyWord")
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	temp := make([]string, 0)
+	var counter int
+	var total int
 	for i, row := range rows {
 		if i == 0 {
 			continue
 		}
-		temp = append(temp, row[3])
-	}
+		temp = append(temp, row[0])
+		counter++
+		total++
 
-	// 初始化屏蔽词mgr
+		// 大于5000存档一次
+		if counter >= 5000 {
+			GetIllegalWordMgr().SetKeywords(temp)
+			// 清空
+			counter = 0
+			temp = nil
+			logger.Debugf("加载屏蔽词 counter: %d", total)
+		}
+	}
 	GetIllegalWordMgr().SetKeywords(temp)
-	return nil
+	return total, nil
 }
