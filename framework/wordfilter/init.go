@@ -40,7 +40,8 @@ func LoadWordCfg(fileName string) (int, error) {
 	var total int
 	for i, row := range rows {
 		if i == 0 {
-			continue
+			// continue
+			break // fixme 临时关闭，加载太慢了
 		}
 		temp = append(temp, row[0])
 		counter++
