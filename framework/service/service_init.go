@@ -28,7 +28,11 @@ func (s *Service) String() string {
 }
 
 func (s *Service) PrivateTopicID() string {
-	return fmt.Sprintf("%s:%d", s.AppId, global.SID)
+	if global.IsDev {
+		return fmt.Sprintf("%s_%d", s.AppId, global.SID)
+	} else {
+		return global.HostName
+	}
 }
 
 func (s *Service) InitLog() error {
