@@ -48,6 +48,17 @@ func (s *Service) initES() error {
 	return nil
 }
 
+func (s *Service) ESPutNoId(dbName string, data proto.Message) error {
+	res, err := s.ES.Index(dbName).
+		Request(data).
+		Refresh(refresh.True).
+		Do(context.Background())
+	if err != nil || (res.Result != result.Created && res.Result != result.Updated) {
+		return errors.Wrap(err, res.Result.Name)
+	}
+	return nil
+}
+
 func (s *Service) ESPut(dbName, id string, data proto.Message) error {
 	res, err := s.ES.Index(dbName).
 		Id(id).
