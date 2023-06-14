@@ -363,7 +363,7 @@ func WarnDelayAf(delay int64, template string, args ...interface{}) {
 		if args == nil {
 			args = make([]interface{}, 0)
 		}
-		template += " cost-time:%dms"
+		template += ", Delay:%d,"
 		args = append(args, delay)
 		log := Caller(zap.WarnLevel) + fmt.Sprintf(template, args...)
 		writeLog(zap.WarnLevel, log)
