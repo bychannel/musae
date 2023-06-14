@@ -10,6 +10,7 @@ import (
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types/enums/refresh"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types/enums/result"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types/enums/scriptsorttype"
+	"github.com/elastic/go-elasticsearch/v8/typedapi/types/enums/sortorder"
 	"github.com/golang/protobuf/proto"
 	"github.com/pkg/errors"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/baseconf"
@@ -141,6 +142,53 @@ func (s *Service) ESMultiSearch(dbName string, matchMap map[string]string, range
 	res, err := s.ES.Search().Index(dbName).Request(req).Do(context.Background())
 	if err != nil {
 		return errors.Wrapf(err, "es search err,dbName:%s, matchMap:%v", dbName, matchMap), nil
+	}
+	if res.TimedOut {
+		return DB_ERROR_TIMEOUT, nil
+	}
+	return nil, &res.Hits
+}
+
+// ESMultiSearchPage 分页+排序+范围查找
+func (s *Service) ESMultiSearchPage(dbName string, rangeMap map[string]RangeItem, hitSize int, sortType *sortorder.SortOrder, page int) (error, *types.HitsMetadata) {
+	var (
+		query = make([]types.Query, 0)
+		req   = &search.Request{}
+	)
+
+	// 范围条件
+	if len(rangeMap) > 0 {
+		for field, kvItem := range rangeMap {
+			tempItem := kvItem // 临时遍历，规避foreach取地址的bug
+			query = append(query, types.Query{Range: map[string]types.RangeQuery{field: types.NumberRangeQuery{
+				Gte: (*types.Float64)(&tempItem.Min),
+				Lte: (*types.Float64)(&tempItem.Max),
+			}}})
+		}
+	}
+
+	// 排序
+	if sortType != nil {
+		req.Sort = []types.SortCombinations{
+			types.SortOptions{SortOptions: map[string]types.FieldSort{
+				"timeStamp": {Order: sortType},
+			}},
+		}
+	}
+
+	// 分页
+	if page >= 0 {
+		from := (page - 1) * hitSize
+		req.From = &from
+	}
+	req.Size = &hitSize // 查询数量
+
+	reqStr, _ := json.Marshal(req)
+	logger.Debugf("ESMultiSearch 请求: %s", string(reqStr))
+	// 请求数据
+	res, err := s.ES.Search().Index(dbName).Request(req).Do(context.Background())
+	if err != nil {
+		return errors.Wrapf(err, "es search err,dbName:%s, matchMap:%v", dbName), nil
 	}
 	if res.TimedOut {
 		return DB_ERROR_TIMEOUT, nil
