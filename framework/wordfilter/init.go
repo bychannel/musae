@@ -47,7 +47,7 @@ func LoadWordCfg(fileName string) (int, error) {
 		total++
 
 		// 大于5000存档一次
-		if counter >= 5000 {
+		if counter >= 3000 {
 			GetIllegalWordMgr().SetKeywords(temp)
 			// 清空
 			counter = 0
