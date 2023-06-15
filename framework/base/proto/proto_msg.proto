@@ -1,18 +1,18 @@
 syntax = "proto3";
 
 package base;
-option go_package = "./base";
+option go_package = "gitlab.musadisca-games.com/wangxw/musae/framework/base";
 
 message ProtoMsg
 {
   string appId = 1;   //message src appid
   int32 msgId = 2;    //message id
   string userId = 3;  //user id
-  uint64 roleId= 4;   //user id
-  string UAID= 5;     //UserActor id
-  bytes data= 6;      // proto Marshal data
-  int32  errCode= 7;  // err code
-  uint32 reqIdx= 8;     // from client request index
-  string topic= 9;    //message pubSub Topic
-  repeated string uids= 10;    //message broadcast to user list
+  uint64 roleId = 4;   //user id
+  string UAID = 5;     //UserActor id
+  bytes data = 6;      // proto Marshal data
+  int32  errCode = 7;  // err code
+  uint32 reqIdx = 8;     // from client request index
+  string topic = 9;    //message pubSub Topic
+  repeated string uids = 10;    //message broadcast to user list
 }
