@@ -1,295 +1,396 @@
 package wordfilter
 
 import (
-	"fmt"
-	"io/ioutil"
+	"io"
+	"reflect"
+	"regexp"
 	"strings"
 	"testing"
-	"time"
 )
 
-func Test_WorldFilter(t *testing.T) {
-	Test_StringSearch(t)
-	Test_WordsSearch(t)
-	Test_StringSearchEx(t)
-	Test_WordsSearchEx(t)
-	Test_IllegalWordsSearch(t)
-	Test_Save_Load(t)
-	Test_Save_Load2(t)
-	Test_time(t)
-}
-
-func Test_StringSearch(t *testing.T) {
-	fmt.Println("test_StringSearch")
-
-	test := "我是中国人"
-	list := []string{"中国", "国人", "zg人"}
-
-	search := NewStringSearch()
-	search.SetKeywords(list)
-
-	b := search.ContainsAny(test)
-	if b == false {
-		fmt.Println("ContainsAny is Error.")
-	}
-
-	f := search.FindFirst(test)
-	if f != "中国" {
-		fmt.Println("FindFirst is Error.")
-	}
-
-	all := search.FindAll(test)
-	if all[0] != "中国" {
-		fmt.Println("FindAll is Error.")
-	}
-	if all[1] != "国人" {
-		fmt.Println("FindAll is Error.")
-	}
-	if len(all) != 2 {
-		fmt.Println("FindAll is Error.")
-	}
-	str := search.Replace(test, '*')
-	if str != "我是***" {
-		fmt.Println("Replace is Error.")
-	}
-}
-func Test_WordsSearch(t *testing.T) {
-	fmt.Println("test_WordsSearch")
-
-	test := "我是中国人"
-	list := []string{"中国", "国人", "zg人"}
-
-	search := NewWordsSearch()
-	search.SetKeywords(list)
-
-	b := search.ContainsAny(test)
-	if b == false {
-		fmt.Println("ContainsAny is Error.")
-	}
-
-	f := search.FindFirst(test)
-	if f.Keyword != "中国" {
-		fmt.Println("FindFirst is Error.")
-	}
-
-	all := search.FindAll(test)
-	if all[0].Keyword != "中国" {
-		fmt.Println("FindAll is Error.")
-	}
-	if all[1].Keyword != "国人" {
-		fmt.Println("FindAll is Error.")
-	}
-	if len(all) != 2 {
-		fmt.Println("FindAll is Error.")
-	}
-	str := search.Replace(test, '*')
-	if str != "我是***" {
-		fmt.Println("Replace is Error.")
-	}
-}
-func Test_StringSearchEx(t *testing.T) {
-	fmt.Println("test_StringSearchEx")
-
-	test := "我是中国人"
-	list := []string{"中国", "国人", "zg人"}
-
-	search := NewStringSearchEx()
-	search.SetKeywords(list)
-
-	b := search.ContainsAny(test)
-	if b == false {
-		fmt.Println("ContainsAny is Error.")
-	}
-
-	f := search.FindFirst(test)
-	if f != "中国" {
-		fmt.Println("FindFirst is Error.")
-	}
-
-	all := search.FindAll(test)
-	if all[0] != "中国" {
-		fmt.Println("FindAll is Error.")
-	}
-	if all[1] != "国人" {
-		fmt.Println("FindAll is Error.")
-	}
-	if len(all) != 2 {
-		fmt.Println("FindAll is Error.")
-	}
-	str := search.Replace(test, '*')
-	if str != "我是***" {
-		fmt.Println("Replace is Error.")
-	}
-}
-func Test_WordsSearchEx(t *testing.T) {
-	fmt.Println("test_WordsSearchEx")
-
-	test := "我是中国人"
-	list := []string{"中国", "国人", "zg人"}
-
-	search := NewWordsSearchEx()
-	search.SetKeywords(list)
-
-	b := search.ContainsAny(test)
-	if b == false {
-		fmt.Println("ContainsAny is Error.")
-	}
-
-	f := search.FindFirst(test)
-	if f.Keyword != "中国" {
-		fmt.Println("FindFirst is Error.")
-	}
-
-	all := search.FindAll(test)
-	if all[0].Keyword != "中国" {
-		fmt.Println("FindAll is Error.")
-	}
-	if all[1].Keyword != "国人" {
-		fmt.Println("FindAll is Error.")
-	}
-	if len(all) != 2 {
-		fmt.Println("FindAll is Error.")
-	}
-	str := search.Replace(test, '*')
-	if str != "我是***" {
-		fmt.Println("Replace is Error.")
-	}
-}
-func Test_IllegalWordsSearch(t *testing.T) {
-	fmt.Println("test_IllegalWordsSearch")
-
-	test := "我是中国人"
-	list := []string{"中国", "国人", "zg人"}
-
-	search := NewIllegalWordsSearch()
-	search.SetKeywords(list)
-
-	b := search.ContainsAny(test)
-	if b == false {
-		fmt.Println("ContainsAny is Error.")
-	}
-
-	f := search.FindFirst(test)
-	if f.Keyword != "中国" {
-		fmt.Println("FindFirst is Error.")
-	}
-
-	all := search.FindAll(test)
-	if all[0].Keyword != "中国" {
-		fmt.Println("FindAll is Error.")
-	}
-	if all[1].Keyword != "国人" {
-		fmt.Println("FindAll is Error.")
-	}
-	if len(all) != 2 {
-		fmt.Println("FindAll is Error.")
-	}
-	str := search.Replace(test, '*')
-	if str != "我是***" {
-		fmt.Println("Replace is Error.")
+func TestLoadDict(t *testing.T) {
+	filter := New()
+	_, err := filter.LoadWordDict("./dict/dict.txt")
+	if err != nil {
+		t.Errorf("fail to load dict %v", err)
 	}
 }
 
-func Test_Save_Load(t *testing.T) {
-	fmt.Println("text_Save_Load")
-
-	test := "我是中国人"
-	list := []string{"中国", "国人", "zg人"}
-
-	search2 := NewStringSearchEx()
-	search2.SetKeywords(list)
-	search2.Save("1.dat")
-
-	search := NewStringSearchEx()
-	search.Load("1.dat")
-
-	b := search.ContainsAny(test)
-	if b == false {
-		fmt.Println("ContainsAny is Error.")
+func TestLoadNetWordDict(t *testing.T) {
+	filter := New()
+	_, err := filter.LoadNetWordDict("https://raw.githubusercontent.com/importcjj/sensitive/master/dict/dict.txt")
+	if err != nil {
+		t.Errorf("fail to load dict %v", err)
 	}
-
-	f := search.FindFirst(test)
-	if f != "中国" {
-		fmt.Println("FindFirst is Error.")
-	}
-
-	all := search.FindAll(test)
-	if all[0] != "中国" {
-		fmt.Println("FindAll is Error.")
-	}
-	if all[1] != "国人" {
-		fmt.Println("FindAll is Error.")
-	}
-	if len(all) != 2 {
-		fmt.Println("FindAll is Error.")
-	}
-	str := search.Replace(test, '*')
-	if str != "我是***" {
-		fmt.Println("Replace is Error.")
+	if len(filter.trie.Root.Children) == 0 {
+		t.Errorf("load dict empty")
 	}
 }
 
-func Test_Save_Load2(t *testing.T) {
-	fmt.Println("test_Save_Load2")
-
-	test := "我是中国人"
-	list := []string{"中国", "国人", "zg人"}
-
-	search2 := NewIllegalWordsSearch()
-	search2.SetKeywords(list)
-	search2.Save("2.dat")
-
-	search := NewIllegalWordsSearch()
-	search.Load("2.dat")
-
-	b := search.ContainsAny(test)
-	if b == false {
-		fmt.Println("ContainsAny is Error.")
+func TestLoad(t *testing.T) {
+	filter := New()
+	var r io.Reader
+	r = strings.NewReader("read")
+	_, err := filter.Load(r)
+	if err != nil {
+		t.Errorf("fail to load dict %v", err)
 	}
-
-	f := search.FindFirst(test)
-	if f.Keyword != "中国" {
-		fmt.Println("FindFirst is Error.")
-	}
-
-	all := search.FindAll(test)
-	if all[0].Keyword != "中国" {
-		fmt.Println("FindAll is Error.")
-	}
-	if all[1].Keyword != "国人" {
-		fmt.Println("FindAll is Error.")
-	}
-	if len(all) != 2 {
-		fmt.Println("FindAll is Error.")
-	}
-	str := search.Replace(test, '*')
-	if str != "我是***" {
-		fmt.Println("Replace is Error.")
+	if len(filter.trie.Root.Children) == 0 {
+		t.Errorf("load dict empty")
 	}
 }
 
-func Test_time(t *testing.T) {
-	bs, _ := ioutil.ReadFile("BadWord.txt")
-	s := string(bs)
-	s = strings.Replace(s, "\r\n", "\n", -1)
-	s = strings.Replace(s, "\r", "\n", -1)
-	sp := strings.Split(s, "\r")
-	list := make([]string, 0)
-	for _, item := range sp {
-		list = append(list, item)
+func TestSensitiveFilter(t *testing.T) {
+	filter := New()
+	filter.AddWord("有一个东西")
+	filter.AddWord("一个东西")
+	filter.AddWord("一个")
+	filter.AddWord("东西")
+	filter.AddWord("个东")
+
+	testcases := []struct {
+		Text       string
+		Expect     string
+		DelWords   []string
+		ThenExpect string
+	}{
+		{"我有一个东东西", "我有东", []string{"一个"}, "我有一"},
+		{"我有一个东西", "我", []string{"有一个东西"}, "我有"},
+		{"一个东西", "", []string{"一个", "东西"}, ""},
+		{"两个东西", "两西", []string{"个东"}, "两个"},
+		{"一个物体", "物体", []string{"一个"}, "一个物体"},
 	}
-	bs2, _ := ioutil.ReadFile("Talk.txt")
-	words := string(bs2)
 
-	search := NewStringSearchEx()
-	search.SetKeywords(list)
+	for _, tc := range testcases {
+		if got := filter.Filter(tc.Text); got != tc.Expect {
+			t.Errorf("filter %s, got %s, expect %s", tc.Text, got, tc.Expect)
+		}
 
-	dt := time.Now()
-	for i := 0; i < 100000; i++ {
-		search.FindAll(words)
+		filter.DelWord(tc.DelWords...)
+
+		if got := filter.Filter(tc.Text); got != tc.ThenExpect {
+			t.Errorf("after del, filter %s, got %s, expect %s", tc.Text, got, tc.ThenExpect)
+		}
+
+		filter.AddWord(tc.DelWords...)
 	}
-	dt2 := time.Now()
 
-	fmt.Println(dt2.Sub(dt))
+}
+func TestSensitiveValidateSingleword(t *testing.T) {
+	filter := New()
+	filter.AddWord("东")
 
+	testcases := []struct {
+		Text        string
+		ExpectPass  bool
+		ExpectFirst string
+	}{
+		{"两个东西", false, "东"},
+	}
+
+	for _, tc := range testcases {
+		if pass, first := filter.Validate(tc.Text); pass != tc.ExpectPass || first != tc.ExpectFirst {
+			t.Errorf("validate %s, got %v, %s, expect %v, %s", tc.Text, pass, first, tc.ExpectPass, tc.ExpectFirst)
+		}
+	}
+
+}
+
+func TestSensitiveValidate(t *testing.T) {
+	filter := New()
+	filter.AddWord("有一个东西")
+	filter.AddWord("一个东西")
+	filter.AddWord("一个")
+	filter.AddWord("东西")
+	filter.AddWord("个东")
+	filter.AddWord("有一个东西")
+	filter.AddWord("一个东西")
+	filter.AddWord("一个")
+	filter.AddWord("东西")
+
+	testcases := []struct {
+		Text            string
+		ExpectPass      bool
+		ExpectFirst     string
+		DelWords        []string
+		ThenExpectPass  bool
+		ThenExpectFirst string
+	}{
+		{"我有一@ |个东东西", false, "一个", []string{"一个"}, false, "个东"},
+		{"我有一个东东西", false, "一个", []string{"一个"}, false, "个东"},
+		{"我有一个东西", false, "有一个东西", []string{"有一个东西", "一个"}, false, "一个东西"},
+		{"一个东西", false, "一个", []string{"个东", "一个"}, false, "一个东西"},
+		{"两个东西", false, "个东", []string{"个东", "东西"}, true, ""},
+		{"一样东西", false, "东西", []string{"东西"}, true, ""},
+	}
+
+	for _, tc := range testcases {
+		if pass, first := filter.Validate(tc.Text); pass != tc.ExpectPass || first != tc.ExpectFirst {
+			t.Errorf("validate %s, got %v, %s, expect %v, %s", tc.Text, pass, first, tc.ExpectPass, tc.ExpectFirst)
+		}
+
+		filter.DelWord(tc.DelWords...)
+
+		if pass, first := filter.Validate(tc.Text); pass != tc.ThenExpectPass || first != tc.ThenExpectFirst {
+			t.Errorf("after del, validate %s, got %v, %s, expect %v, %s", tc.Text, pass, first, tc.ThenExpectPass, tc.ThenExpectFirst)
+		}
+
+		filter.AddWord(tc.DelWords...)
+	}
+
+}
+
+func TestSensitiveReplace(t *testing.T) {
+	filter := New()
+	filter.AddWord("有一个东西")
+	filter.AddWord("一个东西")
+	filter.AddWord("一个")
+	filter.AddWord("东西")
+	filter.AddWord("个东")
+
+	testcases := []struct {
+		Text       string
+		Expect     string
+		DelWords   []string
+		ThenExpect string
+	}{
+		{"我有一个东东西", "我有**东**", []string{"一个"}, "我有一****"},
+		{"我有一个东西", "我*****", []string{"有一个东西"}, "我有****"},
+		{"一个东西", "****", []string{"一个东西", "一个", "东西"}, "一**西"},
+		{"两个东西", "两**西", []string{"个东"}, "两个**"},
+		{"一个物体", "**物体", []string{"一个"}, "一个物体"},
+	}
+
+	for _, tc := range testcases {
+		if got := filter.Replace(tc.Text, '*'); got != tc.Expect {
+			t.Errorf("replace %s, got %s, expect %s", tc.Text, got, tc.Expect)
+		}
+
+		filter.DelWord(tc.DelWords...)
+
+		if got := filter.Replace(tc.Text, '*'); got != tc.ThenExpect {
+			t.Errorf("after del word, replace %s, got %s, expect %s", tc.Text, got, tc.ThenExpect)
+		}
+
+		filter.AddWord(tc.DelWords...)
+	}
+
+}
+
+func TestSensitiveFindAll(t *testing.T) {
+	filter := New()
+	filter.AddWord("有一个东西")
+	filter.AddWord("一个东西")
+	filter.AddWord("一个")
+	filter.AddWord("东西")
+	filter.AddWord("个东")
+
+	testcases := []struct {
+		Text   string
+		Expect []string
+	}{
+		{"我有一个东东西", []string{"一个", "个东", "东西"}},
+		{"我有一个东西", []string{"有一个东西", "一个", "一个东西", "个东", "东西"}},
+		{"一个东西", []string{"一个", "一个东西", "个东", "东西"}},
+		{"两个东西", []string{"个东", "东西"}},
+		{"一个物体", []string{"一个"}},
+	}
+
+	for _, tc := range testcases {
+		if got := filter.FindAll(tc.Text); !reflect.DeepEqual(tc.Expect, got) {
+			t.Errorf("findall %s, got %s, expect %s", tc.Text, got, tc.Expect)
+		}
+	}
+}
+
+func TestSensitiveFindallSingleword(t *testing.T) {
+	filter := New()
+	filter.AddWord("东")
+
+	testcases := []struct {
+		Text   string
+		Expect []string
+	}{
+		{"两个东西", []string{"东"}},
+	}
+
+	for _, tc := range testcases {
+		if got := filter.FindAll(tc.Text); !reflect.DeepEqual(tc.Expect, got) {
+			t.Errorf("findall %s, got %s, expect %s", tc.Text, got, tc.Expect)
+		}
+	}
+
+}
+
+func TestFindAllAfterDeleteSingleWord(t *testing.T) {
+	filter := New()
+	filter.AddWord("有一个东西")
+	filter.AddWord("一个东西")
+	filter.AddWord("一个")
+	filter.AddWord("东西")
+	filter.AddWord("个东")
+
+	testcases := []struct {
+		Text       string
+		Expect     []string
+		DelWord    string
+		ThenExpect []string
+	}{
+		{"我有一个东东西", []string{"一个", "个东", "东西"}, "一个", []string{"个东", "东西"}},
+		{"我有一个东西", []string{"有一个东西", "一个", "一个东西", "个东", "东西"}, "有一个东西", []string{"一个", "一个东西", "个东", "东西"}},
+		{"一个东西", []string{"一个", "一个东西", "个东", "东西"}, "一个东西", []string{"一个", "个东", "东西"}},
+		{"两个东西", []string{"个东", "东西"}, "东西", []string{"个东"}},
+		{"一个物体", []string{"一个"}, "一个", nil},
+	}
+
+	for _, tc := range testcases {
+		if got := filter.FindAll(tc.Text); !reflect.DeepEqual(tc.Expect, got) {
+			t.Errorf("findall %s, got %s, expect %s", tc.Text, got, tc.Expect)
+		}
+
+		filter.DelWord(tc.DelWord)
+
+		if got := filter.FindAll(tc.Text); !reflect.DeepEqual(tc.ThenExpect, got) {
+			t.Errorf("after del a word, findall %s, got %s, expect %s", tc.Text, got, tc.ThenExpect)
+		}
+
+		filter.AddWord(tc.DelWord)
+	}
+}
+
+func TestDeleteWordNotExists(t *testing.T) {
+	filter := New()
+	filter.DelWord("Any")
+	filter.DelWord("Go", "Bad")
+}
+
+func TestDeleteWord2(t *testing.T) {
+	filter := New()
+	filter.AddWord("有一个东西")
+	filter.AddWord("有一个东")
+	filter.AddWord("有一个")
+
+	testcases := []struct {
+		Text            string
+		ExpectPass      bool
+		ExpectFirst     string
+		DelWord         string
+		ThenExpectFirst string
+	}{
+		{"我有一个东西", false, "有一个", "有一个", "有一个东"},
+	}
+
+	for _, tc := range testcases {
+		if pass, first := filter.Validate(tc.Text); pass != tc.ExpectPass || first != tc.ExpectFirst {
+			t.Errorf("validate %s, got %v, %s, expect %v, %s", tc.Text, pass, first, tc.ExpectPass, tc.ExpectFirst)
+		}
+
+		filter.DelWord(tc.DelWord)
+
+		if pass, first := filter.Validate(tc.Text); pass != tc.ExpectPass || first != tc.ThenExpectFirst {
+			t.Errorf("validate %s, got %v, %s, expect %v, %s", tc.Text, pass, first, tc.ExpectPass, tc.ThenExpectFirst)
+		}
+
+		filter.AddWord(tc.DelWord)
+	}
+}
+
+func TestFilter_LoadWordDict(t *testing.T) {
+	type fields struct {
+		trie  *Trie
+		noise *regexp.Regexp
+	}
+	type args struct {
+		path string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			filter := &Filter{
+				trie:  tt.fields.trie,
+				noise: tt.fields.noise,
+			}
+			if _, err := filter.LoadWordDict(tt.args.path); (err != nil) != tt.wantErr {
+				t.Errorf("Filter.LoadWordDict() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestFilter_LoadNetWordDict(t *testing.T) {
+	type fields struct {
+		trie  *Trie
+		noise *regexp.Regexp
+	}
+	type args struct {
+		url string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			filter := &Filter{
+				trie:  tt.fields.trie,
+				noise: tt.fields.noise,
+			}
+			if _, err := filter.LoadNetWordDict(tt.args.url); (err != nil) != tt.wantErr {
+				t.Errorf("Filter.LoadNetWordDict() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestFilter_Load(t *testing.T) {
+	type fields struct {
+		trie  *Trie
+		noise *regexp.Regexp
+	}
+	type args struct {
+		rd io.Reader
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			filter := &Filter{
+				trie:  tt.fields.trie,
+				noise: tt.fields.noise,
+			}
+			if _, err := filter.Load(tt.args.rd); (err != nil) != tt.wantErr {
+				t.Errorf("Filter.Load() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestIssue13(t *testing.T) {
+	filter := New()
+	filter.AddWord("words")
+	filter.AddWord("警察局")
+
+	r := filter.FindAll("words words words kill myself myself suicide警察局kill my self")
+	expected := []string{"words", "警察局"}
+
+	if !reflect.DeepEqual(r, expected) {
+		t.Errorf("%v expected, got %v", expected, r)
+	}
 }
