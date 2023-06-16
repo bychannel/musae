@@ -241,69 +241,8 @@ func (s *Service) initSvc() error {
 	return nil
 }
 
-/*func (s *Service) initGrpcSvc() error {
-
-	var err error
-	// create a Dapr service server
-	s.svc, err = grpc.NewService(s.InAddr)
-
-	if err != nil {
-		logger.Fatal("error NewService, err: ", err)
-	}
-
-	if err := s.initsubpub(); err != nil {
-		logger.Fatal("error initsubpub, err: ", err)
-	}
-
-	// add a service to service invocation handler
-	if err := s.svc.AddServiceInvocationHandler("RpcCall", s.OnInvokeHandler); err != nil {
-		logger.Fatal("error adding invocation handler: %v", err)
-		return err
-	}
-
-	// add a binding invocation handler
-	if err := s.svc.AddBindingInvocationHandler("Binding", s.OnBindHandler); err != nil {
-		logger.Fatal("error adding binding handler: %v", err)
-		return err
-	}
-
-	// add an input binding invocation handler
-	if err := s.bindingCronHandler(); err != nil {
-		return err
-	}
-
-	// add ready handler
-	if err := s.svc.AddHealthCheckHandler("/ready", func(ctx context.Context) (err error) {
-		logger.Debugf("/ready, server state: %v", s.state)
-		if s.state == base.PState_Running {
-			return nil
-		}
-		return fmt.Errorf("app is unready")
-	}); err != nil {
-		return err
-	}
-	// add healthz handler
-	if err := s.svc.AddHealthCheckHandler("/healthz", func(ctx context.Context) (err error) {
-		logger.Debugf("/healthz, server state: %v", s.state)
-		return nil
-	}); err != nil {
-		return err
-	}
-
-	if s.ActorFactory != nil {
-		s.svc.RegisterActorImplFactory(s.ActorFactory,
-			config.WithActorIdleTimeout(fmt.Sprintf("%ss", baseconf.GetBaseConf().UserActorGCTime)), //600s
-			config.WithActorScanInterval(baseconf.GetBaseConf().UserActorGCScan),                    //10s
-			config.WithDrainOngingCallTimeout(baseconf.GetBaseConf().UserActorGCScan),               //10s
-			config.WithDrainBalancedActors(true),
-		)
-		logger.Info("[service], init ActorFactory success")
-	}
-	return nil
-}*/
-
 func (s *Service) initsubpub() error {
-	if s.HasPriTopic { //临时用 rand替换GUID
+	if s.HasPriTopic {
 		s.PrivateTopic = s.PrivateTopicID()
 		priSub := &common.Subscription{
 			PubsubName: "topic-private",
@@ -335,17 +274,17 @@ func (s *Service) initsubpub() error {
 
 	{
 		// add golbal topic subscriptions
-		global := &common.Subscription{
+		globalSub := &common.Subscription{
 			PubsubName: "topic-global",
 			Topic:      GLOBAL_TOPIC,
 			Route:      "/event",
 		}
 
-		if err := s.svc.AddTopicEventHandler(global, s.OnEventHandler); err != nil {
-			logger.Fatal("error adding topic subscription: %v, %v", err, global)
+		if err := s.svc.AddTopicEventHandler(globalSub, s.OnEventHandler); err != nil {
+			logger.Fatal("error adding topic subscription: %v, %v", err, globalSub)
 			return err
 		}
-		logger.Infof("Subscript Global Topic Event: %+v", global)
+		logger.Infof("Subscript Global Topic Event: %+v", globalSub)
 	}
 
 	{
