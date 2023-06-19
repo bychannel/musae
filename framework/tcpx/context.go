@@ -459,16 +459,16 @@ func (ctx *Context) ReqIndex() (int32, bool) {
 }
 
 // When you want to tag an username to the context, use it, or it will be regarded as an anonymous user
-func (ctx *Context) SetReqIndex(reqIdx int32) {
+func (ctx *Context) SetReqIndex(reqIdx uint32) {
 	ctx.setCtxPerConn(key_reqIndex, reqIdx)
 }
 
-func (ctx *Context) GetReqIndex() int32 {
+func (ctx *Context) GetReqIndex() uint32 {
 	reqIdx, ok := ctx.GetCtxPerConn(key_reqIndex)
 	if !ok {
 		return 0
 	}
-	return reqIdx.(int32)
+	return reqIdx.(uint32)
 }
 
 // this has no restriction for key, should be used in local package

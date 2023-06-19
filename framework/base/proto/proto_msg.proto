@@ -13,6 +13,7 @@ message ProtoMsg
   bytes data = 6;      // proto Marshal data
   int32  errCode = 7;  // err code
   uint32 reqIdx = 8;     // from client request index
-  string topic = 9;    //message pubSub Topic
-  repeated string uids = 10;    //message broadcast to user list
+  uint32 serverReqIdx = 9;     // from server request index
+  string topic = 10;    //message pubSub Topic
+  repeated string uids = 11;    //message broadcast to user list
 }
