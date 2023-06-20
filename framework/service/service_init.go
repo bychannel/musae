@@ -62,7 +62,7 @@ func (s *Service) InitBase() error {
 	logger.Info("[service], initBase begin")
 	s.TimerMap = &sync.Map{}
 	s.CfgKeys = &sync.Map{}
-	s.Players = &sync.Map{}
+	s.OnlinePlayers = &sync.Map{}
 	s.TimeCh = make(chan base.TimerEventCB, base.MAX_TIMER_SIZE)
 	s.ExitCh = make(chan struct{}, 1)
 	s.GuidPool = guid.NewGUIDPool(s.DBNext)
