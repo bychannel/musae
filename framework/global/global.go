@@ -27,6 +27,7 @@ const (
 	BATTLE_SVC = "battle"
 
 	PlayerCountType = "PlayerCount" // 总在线人数
+	CenterActorID   = "centeractor:0"
 
 	UserActorType   = "UserActor"   // UserActor 类型
 	RoomActorType   = "RoomActor"   // RoomActor 类型
