@@ -36,6 +36,10 @@ type BaseActor struct {
 }
 
 func (s *BaseActor) RegisterProtoHandler(messageId int32, handler base.FProtoMsgHandler) {
+	if s.MsgFunc == nil {
+		s.MsgFunc = make(map[int32]base.FProtoMsgHandler)
+	}
+
 	if _, ok := s.MsgFunc[messageId]; !ok {
 		s.MsgFunc[messageId] = handler
 		logger.Debugf("register messageId: %d", messageId)
