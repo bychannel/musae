@@ -90,14 +90,16 @@ func (s *Service) ESGet(dbName, id string) (error, []byte) {
 //	@param dbName 索引名
 //	@param matchMap 等值条件 没有填nil
 //	@param rangeMap 范围条件 没有填nil
+//	@param filterMap 排除条件 没有填nil
 //	@param hitSize 表示期望命中的数量，真实返回的结果可能会小于该值，[注意：取值0-10000，其他值非法]
 //	@param random 是否需要结果随机，[注意：随机是对于整个doc而言，而非按字段]
 //	@return error
 //	@return *types.HitsMetadata
-func (s *Service) ESMultiSearch(dbName string, matchMap map[string]string, rangeMap map[string]RangeItem, hitSize int, random bool) (error, *types.HitsMetadata) {
+func (s *Service) ESMultiSearch(dbName string, matchMap map[string]string, rangeMap map[string]RangeItem, filterMap map[string][]string, hitSize int, random bool) (error, *types.HitsMetadata) {
 	var (
-		query = make([]types.Query, 0)
-		req   = &search.Request{}
+		query       = make([]types.Query, 0)
+		filterQuery = make([]types.Query, 0)
+		req         = &search.Request{}
 	)
 
 	if len(matchMap) == 0 && len(rangeMap) == 0 {
@@ -120,6 +122,14 @@ func (s *Service) ESMultiSearch(dbName string, matchMap map[string]string, range
 			}}})
 		}
 	}
+	// 排除条件
+	if len(filterMap) > 0 {
+		for field, keywords := range filterMap {
+			filterQuery = append(filterQuery, types.Query{Terms: &types.TermsQuery{
+				TermsQuery: map[string]types.TermsQueryField{field: keywords},
+			}})
+		}
+	}
 
 	// 排序，随机配置
 	if random {
@@ -133,8 +143,15 @@ func (s *Service) ESMultiSearch(dbName string, matchMap map[string]string, range
 		}
 	}
 
-	req.Query = &types.Query{Bool: &types.BoolQuery{Must: query}} // 等值条件
-	req.Size = &hitSize                                           // 查询数量
+	t := &types.BoolQuery{}
+	if len(query) > 0 {
+		t.Must = query
+	}
+	if len(filterQuery) > 0 {
+		t.MustNot = filterQuery
+	}
+	req.Query = &types.Query{Bool: t} // 条件填充
+	req.Size = &hitSize               // 查询数量
 
 	reqStr, _ := json.Marshal(req)
 	logger.Debugf("ESMultiSearch 请求: %s", string(reqStr))
