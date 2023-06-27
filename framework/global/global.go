@@ -26,6 +26,9 @@ const (
 	BILL_SVC   = "bill"
 	BATTLE_SVC = "battle"
 
+	Platform_Android = "android"
+	Platform_IOS     = "ios"
+
 	PlayerCountType = "PlayerCount" // 总在线人数
 	CenterActorID   = "centeractor:0"
 
