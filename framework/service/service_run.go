@@ -5,6 +5,7 @@ import (
 	dapr "github.com/dapr/go-sdk/client"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/base"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/baseconf"
+	"gitlab.musadisca-games.com/wangxw/musae/framework/global"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/logger"
 	"net/http"
 	"time"
@@ -26,7 +27,7 @@ func (s *Service) Run() error {
 				logger.Fatal("[service] dapr server start exit, err: ", err)
 			}
 		}
-		logger.Info("[service] exit", s.InAddr)
+		logger.Infof("service %s exit", global.AppID)
 
 		//退出进程
 		s.ExitCh <- struct{}{}
@@ -57,7 +58,7 @@ func (s *Service) Run() error {
 			if err := s.tcp.ListenAndServe("tcp", s.OutAddr); err != nil {
 				logger.Fatal("tcp service exit, err: ", err)
 			}
-			logger.Info("[service] exit", s.OutAddr)
+			logger.Info("server exit", s.OutAddr)
 		}()
 	}
 
@@ -72,7 +73,7 @@ func (s *Service) Run() error {
 			if err := s.http.Start(); err != nil {
 				logger.Fatal("web server exit, err: %v", err)
 			}
-			logger.Info("[service] exit", s.WebAddr)
+			logger.Info("web server exit", s.WebAddr)
 		}()
 	}
 
