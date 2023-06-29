@@ -38,5 +38,5 @@ type IServer interface {
 type IProcess interface {
 	Start(opts ...FProcessOption)
 	Exit()
-	Status() PState
+	State() PState
 }

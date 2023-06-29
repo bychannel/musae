@@ -9,6 +9,10 @@ import (
 	"syscall"
 )
 
+var (
+	gProcess base.IProcess
+)
+
 type Process struct {
 	srv base.IServer
 }
@@ -19,8 +23,15 @@ func NewProcess(srv base.IServer) base.IProcess {
 }
 
 func Start(srv base.IServer, opts ...base.FProcessOption) {
-	proc := NewProcess(srv)
-	proc.Start(opts...)
+	gProcess = NewProcess(srv)
+	gProcess.Start(opts...)
+}
+
+func Exit() {
+	gProcess.(*Process).srv.SetState(base.PState_Exiting)
+	gProcess.(*Process).srv.Exit()
+	gProcess.(*Process).srv.GracefulStop()
+	logger.Infof("[process] graceful exit")
 }
 
 func (p *Process) Start(opts ...base.FProcessOption) {
@@ -118,7 +129,7 @@ func (p *Process) Exit() {
 	p.srv.GracefulStop()
 }
 
-func (p *Process) Status() base.PState {
+func (p *Process) State() base.PState {
 	logger.Info("[process] state:", p.srv.State())
 	return p.srv.State()
 }
