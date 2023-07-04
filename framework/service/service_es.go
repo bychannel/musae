@@ -167,7 +167,7 @@ func (s *Service) ESMultiSearch(dbName string, matchMap map[string]string, range
 }
 
 // ESMultiSearchPage 分页+排序+范围查找
-func (s *Service) ESMultiSearchPage(dbName string, rangeMap map[string]RangeItem, hitSize int, sortType *sortorder.SortOrder, page int) (error, *types.HitsMetadata) {
+func (s *Service) ESMultiSearchPage(dbName string, rangeMap map[string]RangeItem, hitSize int, sortType *sortorder.SortOrder, from int) (error, *types.HitsMetadata) {
 	var (
 		query = make([]types.Query, 0)
 		req   = &search.Request{}
@@ -194,10 +194,7 @@ func (s *Service) ESMultiSearchPage(dbName string, rangeMap map[string]RangeItem
 	}
 
 	// 分页
-	if page >= 0 {
-		from := (page - 1) * hitSize
-		req.From = &from
-	}
+	req.From = &from
 	req.Size = &hitSize // 查询数量
 
 	reqStr, _ := json.Marshal(req)
