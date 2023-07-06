@@ -18,6 +18,7 @@ import (
 	"gitlab.musadisca-games.com/wangxw/musae/framework/tcpx"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/web"
 	"math/rand"
+	"strings"
 
 	"sync"
 	"time"
@@ -28,10 +29,56 @@ func (s *Service) String() string {
 }
 
 func (s *Service) PrivateTopicID() string {
-	if global.IsDev {
-		return fmt.Sprintf("%s_%d", s.AppId, global.SID)
+	var prefix string
+	if !strings.HasPrefix(global.Gateway, "https") {
+		strs := strings.Split(global.Gateway, "//")
+		if len(strs) == 2 {
+			prefix = strs[1]
+		}
+	}
+	if prefix == "" {
+		if global.IsDev {
+			return fmt.Sprintf("%s_%d", s.AppId, global.SID)
+		} else {
+			return global.HostName
+		}
+
 	} else {
-		return global.HostName
+		if global.IsDev {
+			return fmt.Sprintf("%s_%d", s.AppId, global.SID) + ":" + prefix
+		} else {
+			return global.HostName + ":" + prefix
+		}
+	}
+}
+
+func (s *Service) AppTopicID() string {
+	var prefix string
+	if !strings.HasPrefix(global.Gateway, "https") {
+		strs := strings.Split(global.Gateway, "//")
+		if len(strs) == 2 {
+			prefix = strs[1]
+		}
+	}
+	if prefix == "" {
+		return global.AppID
+	} else {
+		return global.AppID + ":" + prefix
+	}
+}
+
+func (s *Service) GlobalTopicID() string {
+	var prefix string
+	if !strings.HasPrefix(global.Gateway, "https") {
+		strs := strings.Split(global.Gateway, "//")
+		if len(strs) == 2 {
+			prefix = strs[1]
+		}
+	}
+	if prefix == "" {
+		return GLOBAL_TOPIC
+	} else {
+		return GLOBAL_TOPIC + ":" + prefix
 	}
 }
 
@@ -243,10 +290,9 @@ func (s *Service) initSvc() error {
 
 func (s *Service) initsubpub() error {
 	if s.HasPriTopic {
-		s.PrivateTopic = s.PrivateTopicID()
 		priSub := &common.Subscription{
 			PubsubName: "topic-private",
-			Topic:      s.PrivateTopic,
+			Topic:      s.PrivateTopicID(),
 			Route:      "/event",
 		}
 		if err := s.svc.AddTopicEventHandler(priSub, s.OnEventHandler); err != nil {
@@ -260,7 +306,7 @@ func (s *Service) initsubpub() error {
 		// add appid topic subscriptions
 		appidSub := &common.Subscription{
 			PubsubName: "topic-appid",
-			Topic:      s.AppId,
+			Topic:      s.AppTopicID(),
 			Route:      "/event",
 		}
 
@@ -276,7 +322,7 @@ func (s *Service) initsubpub() error {
 		// add golbal topic subscriptions
 		globalSub := &common.Subscription{
 			PubsubName: "topic-global",
-			Topic:      GLOBAL_TOPIC,
+			Topic:      s.GlobalTopicID(),
 			Route:      "/event",
 		}
 
