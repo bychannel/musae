@@ -55,7 +55,7 @@ func (s *Service) ESPutNoId(dbName string, data proto.Message) error {
 		Refresh(refresh.True).
 		Do(context.Background())
 	if err != nil || (res.Result != result.Created && res.Result != result.Updated) {
-		return errors.Wrap(err, res.Result.Name)
+		return err
 	}
 	return nil
 }
