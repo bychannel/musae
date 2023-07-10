@@ -16,11 +16,12 @@ var ChatActorCount int32   // UserActor数量
 
 const (
 	//server appid
-	GUIDE_SVC = "guide"
-	LOGIN_SVC = "login"
-	GATE_SVC  = "gate"
-	LOBBY_SVC = "lobby"
-	ACTOR_SVC = "actor"
+	GUIDE_SVC  = "guide"
+	LOGIN_SVC  = "login"
+	GATE_SVC   = "gate"
+	LOBBY_SVC  = "lobby"
+	CENTER_SVC = "center"
+	ACTOR_SVC  = "actor"
 	//MAIL_SVC   = "mail"
 	IDIP_SVC   = "idip"
 	BILL_SVC   = "bill"
