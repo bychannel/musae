@@ -136,7 +136,7 @@ func (s *Service) GracefulStop() {
 		time.Sleep(6 * time.Second)
 		szLog := fmt.Sprintf("ServerStop success appid:%s version:%s rolling:%s", global.AppID, global.APP_VERSION, global.ROLLING_VERSION)
 		logger.Info(szLog)
-		if baseconf.GetBaseConf().IsDebug && !global.IsDev && global.IsActor(global.AppID) &&
+		if baseconf.GetBaseConf().IsDebug && !global.IsDev &&
 			len(baseconf.GetBaseConf().FeishuNotifyRobot) > 0 {
 			logger.PushLog2Chat(baseconf.GetBaseConf().FeishuNotifyRobot, "ServerStop", szLog)
 		}
