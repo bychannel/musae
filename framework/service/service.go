@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"github.com/dapr/go-sdk/actor"
 	"github.com/dapr/go-sdk/actor/config"
 	"github.com/dapr/go-sdk/actor/runtime"
@@ -11,6 +12,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/base"
+	"gitlab.musadisca-games.com/wangxw/musae/framework/baseconf"
+	"gitlab.musadisca-games.com/wangxw/musae/framework/global"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/logger"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/metrics"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/tcpx"
@@ -131,7 +134,12 @@ func (s *Service) GracefulStop() {
 	}
 	go func() {
 		time.Sleep(6 * time.Second)
-		logger.Info("[service] GracefulStop")
+		szLog := fmt.Sprintf("ServerStop success appid:%s version:%s rolling:%s", global.AppID, global.APP_VERSION, global.ROLLING_VERSION)
+		logger.Info(szLog)
+		if baseconf.GetBaseConf().IsDebug && !global.IsDev && global.IsActor(global.AppID) &&
+			len(baseconf.GetBaseConf().FeishuNotifyRobot) > 0 {
+			logger.PushLog2Chat(baseconf.GetBaseConf().FeishuNotifyRobot, "ServerStop", szLog)
+		}
 		s.ExitCh <- struct{}{}
 	}()
 }
