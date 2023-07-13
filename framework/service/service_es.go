@@ -84,6 +84,18 @@ func (s *Service) ESGet(dbName, id string) (error, []byte) {
 	return nil, res.Source_
 }
 
+func (s *Service) ESDel(dbName, id string) error {
+	res, err := s.ES.Delete(dbName, id).Do(context.Background())
+	if err != nil {
+		return errors.Wrapf(err, "es delete got err, db:%s, id:%s", dbName, id)
+	}
+	if res.Result != result.Deleted {
+		return fmt.Errorf("es delete failed. result:%s", res.Result)
+	}
+
+	return nil
+}
+
 // ESMultiSearch
 //
 //	@Description: ES多条件查找，支持等值和范围条件
