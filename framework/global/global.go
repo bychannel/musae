@@ -9,10 +9,10 @@ var Gateway string   // 网关地址
 var TcpAddr string   // 长链接地址
 var StartTime string // 服务器启动时间
 var GateServices []string
-var TotalPlayerCount int32 // 总用户在线
-var UserActorCount int32   // UserActor数量
-var RoomActorCount int32   // UserActor数量
-var ChatActorCount int32   // UserActor数量
+var TotalPlayerCount int32   // 总用户在线
+var UserActorCount int32     // UserActor数量
+var RoomActorCount int32     // UserActor数量
+var AllianceActorCount int32 // UserActor数量
 
 const (
 	//server appid
