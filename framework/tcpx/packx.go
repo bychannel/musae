@@ -638,7 +638,7 @@ func UnpackToBlockFromReaderLimitMaxLengthOfByte(reader io.Reader, maxByTe int) 
 		return nil, e
 	}
 
-	if length > int32(maxByTe) {
+	if length < 0 || length > int32(maxByTe) {
 		return nil, errorx.NewFromStringf("recv message beyond max byte length limit(%d), got (%d)", maxByTe, length)
 	}
 
