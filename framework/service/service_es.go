@@ -96,6 +96,14 @@ func (s *Service) ESDel(dbName, id string) error {
 	return nil
 }
 
+func (s *Service) ESDelIndex(dbName string) error {
+	_, err := s.ES.Indices.Delete(dbName).Do(context.Background())
+	if err != nil {
+		return errors.Wrapf(err, "es delete index  got err, db:%s", dbName)
+	}
+	return nil
+}
+
 // ESMultiSearch
 //
 //	@Description: ES多条件查找，支持等值和范围条件
