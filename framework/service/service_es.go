@@ -97,6 +97,10 @@ func (s *Service) ESDel(dbName, id string) error {
 }
 
 func (s *Service) ESDelIndex(dbName string) error {
+	exist, _ := s.ES.Indices.Exists(dbName).IsSuccess(context.Background())
+	if !exist {
+		return nil
+	}
 	_, err := s.ES.Indices.Delete(dbName).Do(context.Background())
 	if err != nil {
 		return errors.Wrapf(err, "es delete index  got err, db:%s", dbName)
