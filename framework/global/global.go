@@ -13,6 +13,11 @@ var TotalPlayerCount int32   // 总用户在线
 var UserActorCount int32     // UserActor数量
 var RoomActorCount int32     // UserActor数量
 var AllianceActorCount int32 // UserActor数量
+var RdsCfgCenterHost string  // redis配置中心 addr+port
+var RdsCfgCenterPass string  // redis配置中心 passwd
+var RdsCfgNameSpace string   // redis配置中心 namespace
+var RdsCfgGroup string       // redis配置中心 group
+var RdsCfgVersion string     // redis配置中心 version
 
 const (
 	//server appid

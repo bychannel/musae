@@ -62,6 +62,7 @@ type Service struct {
 	http          *web.HttpServer
 	Redis         *redis.Client
 	RedisCluster  *redis.ClusterClient
+	RedisCenter   *redis.Client
 	ES            *elasticsearch.TypedClient
 	state         base.PState
 
@@ -97,7 +98,7 @@ func (s *Service) RegisterBindingInvocationHandler(name string, fn common.Bindin
 }
 
 /*
- method for GET, POST
+method for GET, POST
 */
 func (s *Service) RegisterHttpHandler(method, relativePath string, fn gin.HandlerFunc) error {
 	s.http.RegisterHandler(method, relativePath, fn)
