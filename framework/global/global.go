@@ -17,7 +17,6 @@ var RdsCfgCenterHost string  // redis配置中心 addr+port
 var RdsCfgCenterPass string  // redis配置中心 passwd
 var RdsCfgNameSpace string   // redis配置中心 namespace
 var RdsCfgGroup string       // redis配置中心 group
-var RdsCfgVersion string     // redis配置中心 version
 
 const (
 	//server appid
