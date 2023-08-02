@@ -126,9 +126,9 @@ func (s *Service) ESMultiSearch(dbName string, matchMap map[string]string, range
 		req         = &search.Request{}
 	)
 
-	if len(matchMap) == 0 && len(rangeMap) == 0 {
-		return fmt.Errorf("es query param illegal"), nil
-	}
+	//if len(matchMap) == 0 && len(rangeMap) == 0 {
+	//	return fmt.Errorf("es query param illegal"), nil
+	//}
 
 	// 等值条件
 	if len(matchMap) > 0 {
