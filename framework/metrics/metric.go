@@ -5,6 +5,7 @@ import (
 	"fmt"
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	io_prometheus_client "github.com/prometheus/client_model/go"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/baseconf"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/global"
@@ -12,6 +13,7 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -197,7 +199,10 @@ func (m *MetricMgr) Start(svcPath, logFile string, isk8s bool) {
 	if utils.PathExists(m.logPath) == false {
 		os.MkdirAll(m.logPath, 0755)
 	}
-	go m.tickLogger(isk8s)
+	// 指标端口为空时写指标数据到文件
+	if global.MetricPort == "" {
+		go m.tickLogger(isk8s)
+	}
 }
 
 //
@@ -289,4 +294,9 @@ func InitMetric(logPath, fileName string, service []string, registerFunc Registe
 	//logger.Infof("BaseConf: %v", baseconf.GetBaseConf())
 	//logger.Info("[Metrics] init metric success")
 	return nil
+}
+
+func StartMetric(addr string) {
+	http.Handle("/metrics", promhttp.Handler())
+	http.ListenAndServe(addr, nil)
 }

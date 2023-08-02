@@ -1,13 +1,14 @@
 package global
 
-var AppID string    // 服务器标识
-var HostName string // 系统主机名
-var IsCloud bool    // 是否云环境
-var IsDev bool      // 是否开发环境
-var SID int64       // 服务ID
-var Gateway string  // 网关地址
-var TcpAddr string  // 长链接地址
-var StartTime int64 // 服务器启动时间
+var AppID string      // 服务器标识
+var HostName string   // 系统主机名
+var IsCloud bool      // 是否云环境
+var IsDev bool        // 是否开发环境
+var SID int64         // 服务ID
+var Gateway string    // 网关地址
+var TcpAddr string    // 长链接地址
+var StartTime int64   // 服务器启动时间
+var MetricPort string // 指标端口
 var GateServices []string
 var TotalPlayerCount int32   // 总用户在线
 var UserActorCount int32     // UserActor数量

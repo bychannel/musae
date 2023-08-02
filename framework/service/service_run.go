@@ -7,6 +7,7 @@ import (
 	"gitlab.musadisca-games.com/wangxw/musae/framework/baseconf"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/global"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/logger"
+	"gitlab.musadisca-games.com/wangxw/musae/framework/metrics"
 	"net/http"
 	"time"
 )
@@ -74,6 +75,19 @@ func (s *Service) Run() error {
 				logger.Fatal("web server exit, err: %v", err)
 			}
 			logger.Info("web server exit", s.WebAddr)
+		}()
+	}
+
+	if global.MetricPort != "" {
+
+		go func() {
+			defer func() {
+				if err := recover(); err != any(nil) {
+					logger.Fatal("tcp server run recover, err: ", err)
+				}
+			}()
+			logger.Info("[service] init", global.MetricPort)
+			metrics.StartMetric(global.MetricPort)
 		}()
 	}
 
