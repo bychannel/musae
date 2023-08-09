@@ -96,9 +96,19 @@ func (s *Service) ESDel(dbName, id string) error {
 	return nil
 }
 
+// ESCheckIndex
+//
+//	@Description: 检查指定的索引是否存在
+//	@receiver s
+//	@param dbName 索引名
+//	@return bool 存在则返回true，否则返回false
+func (s *Service) ESCheckIndex(dbName string) bool {
+	ok, _ := s.ES.Indices.Exists(dbName).IsSuccess(context.Background())
+	return ok
+}
+
 func (s *Service) ESDelIndex(dbName string) error {
-	exist, _ := s.ES.Indices.Exists(dbName).IsSuccess(context.Background())
-	if !exist {
+	if !s.ESCheckIndex(dbName) {
 		return nil
 	}
 	_, err := s.ES.Indices.Delete(dbName).Do(context.Background())
