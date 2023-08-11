@@ -122,7 +122,7 @@ func (s *Service) ESDelIndex(dbName string) error {
 //
 //	@Description: ES多条件查找，支持等值和范围条件
 //	@param dbName 索引名
-//	@param matchMap 等值条件 没有填nil
+//	@param matchMap 等值条件 没有填nil 默认模糊查询,需要精准查找需要在字段后加keyword
 //	@param rangeMap 范围条件 没有填nil
 //	@param filterMap 排除条件 没有填nil
 //	@param hitSize 表示期望命中的数量，真实返回的结果可能会小于该值，[注意：取值0-10000，其他值非法]
