@@ -251,6 +251,15 @@ func (s *Service) initSvc() error {
 		logger.Fatal("error adding binding handler: %v", err)
 		return err
 	}
+	if baseconf.GetBaseConf().IsDebug {
+		if err := s.svc.AddBindingInvocationHandler("/api/_test", func(ctx context.Context, in *common.BindingEvent) (out []byte, err error) {
+			out = []byte(fmt.Sprintf("i'm ok, %s\nstart time: %s", time.Now().Local().String(), time.Unix(global.StartTime, 0).String()))
+			return out, nil
+		}); err != nil {
+			logger.Fatal("error adding binding invocation _test handler: %v", err)
+			return err
+		}
+	}
 
 	// add an input binding invocation handler
 	if err := s.bindingCronHandler(); err != nil {
