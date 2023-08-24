@@ -64,20 +64,23 @@ const (
 	GateDelayHist HistogramType = "GateDelayHist" // gate delay histogram
 
 	// 具体服务
-	GuideSucceedCount GaugeType = "GuideSucceedCount" // 请求Guide成功的用户数量
-	GuideFailedCount  GaugeType = "GuideFailedCount"  // 请求Guide失败的用户数量
-	LoginSucceedCount GaugeType = "LoginSucceedCount" // 登录Login成功的用户数量
-	LoginFailedCount  GaugeType = "LoginFailedCount"  // 登录Login失败的用户数量
-	EnterSucceedCount GaugeType = "EnterSucceedCount" // 登录成功成功的用户数量
-	EnterFailedCount  GaugeType = "EnterFailedCount"  // 登录录失败的用户数量
-	EnterDropCount    GaugeType = "EnterDropCount"    // 登录录丢去的用户数量
-	GateAuthCount     GaugeType = "GateAuthCount"     // 网关Auth验证成功用户数量
-	GateAuthFailCount GaugeType = "GateAuthFailCount" // 网关Auth验证失败用户数量
-	UserActorCount    GaugeType = "UserActorCount"    // 用户模型在数据中的数量
-	UserCount         GaugeType = "UserCount"         // 用户数量
-	UserConn          GaugeType = "UserConn"          // 网关 用户连接数量
-	PendingUserCount  GaugeType = "PendingUserCount"  // 网关 挂起的用户数量
-	QueueUserCount    GaugeType = "QueueUserCount"    // 网关 登录队列用户数量
+	GuideSucceedCount  GaugeType = "GuideSucceedCount"  // 请求Guide成功的用户数量
+	GuideFailedCount   GaugeType = "GuideFailedCount"   // 请求Guide失败的用户数量
+	LoginSucceedCount  GaugeType = "LoginSucceedCount"  // 登录Login成功的用户数量
+	LoginFailedCount   GaugeType = "LoginFailedCount"   // 登录Login失败的用户数量
+	EnterSucceedCount  GaugeType = "EnterSucceedCount"  // 登录成功成功的用户数量
+	EnterFailedCount   GaugeType = "EnterFailedCount"   // 登录录失败的用户数量
+	EnterDropCount     GaugeType = "EnterDropCount"     // 登录录丢去的用户数量
+	GateAuthCount      GaugeType = "GateAuthCount"      // 网关Auth验证成功用户数量
+	GateAuthFailCount  GaugeType = "GateAuthFailCount"  // 网关Auth验证失败用户数量
+	UserActorCount     GaugeType = "UserActorCount"     // 用户模型在数据中的数量
+	RoomActorCount     GaugeType = "RoomActorCount"     // 房间模型在数据中的数量
+	AllianceActorCount GaugeType = "AllianceActorCount" // 联盟模型在数据中的数量
+	UserCount          GaugeType = "UserCount"          // 用户在线数量
+	AllUserCount       GaugeType = "AllUserCount"       // 总用户在线数量
+	UserConn           GaugeType = "UserConn"           // 网关 用户连接数量
+	PendingUserCount   GaugeType = "PendingUserCount"   // 网关 挂起的用户数量
+	QueueUserCount     GaugeType = "QueueUserCount"     // 网关 登录队列用户数量
 
 	GateMsgCount    GaugeType = "GateMsgCount"    // 网关消息计数
 	GateUpMsgSize   GaugeType = "GateUpMsgSize"   // 网关上行消息大小
