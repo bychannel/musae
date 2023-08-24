@@ -24,6 +24,7 @@ const (
 	GUID_TOPIC    GUID_TYPE = "GUID_TOPIC"    // 主题订阅id
 	GUID_LOG      GUID_TYPE = "GUID_LOG"      // 日志id
 	GUID_ALLIANCE GUID_TYPE = "GUID_ALLIANCE" // 联盟id
+	GUID_CALLINFO GUID_TYPE = "GUID_CALLINFO" // 通话ID
 )
 
 type FDBNext = func(name string, delta uint64) (uint64, error)
