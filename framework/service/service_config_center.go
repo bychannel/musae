@@ -93,13 +93,16 @@ func (s *Service) SaveToConfigCenter(key, value string) error {
 }
 
 func (s *Service) GetConfigKeyForInt(key string) (int32, error) {
-	if value, ok := s.CfgKeys.Load(key); ok {
-		if v, ok1 := value.(int32); ok1 {
-			return v, nil
-		}
+	val, ok := s.CfgKeys.Load(key)
+	if !ok {
+		return 0, DB_ERROR_NOT_EXIST
+	}
+	v, ok := val.(string)
+	if !ok {
 		return 0, DB_ERROR_MARSHAL
 	}
-	return 0, DB_ERROR_NOT_EXIST
+	ret, err := strconv.Atoi(v)
+	return int32(ret), err
 }
 
 func (s *Service) GetConfigKeyForStr(key string) (string, error) {
