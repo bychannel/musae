@@ -65,7 +65,7 @@ func (s *Service) ESPut(dbName, id string, data proto.Message) error {
 	res, err := s.ES.Index(dbName).Id(id).Request(data).Refresh(refresh.True).Do(context.Background())
 	handleESWriteMetric(start, data, err)
 	if err != nil || (res.Result != result.Created && res.Result != result.Updated) {
-		return errors.Wrap(err, res.Result.Name)
+		return err
 	}
 	return nil
 }
