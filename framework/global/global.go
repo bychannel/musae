@@ -32,6 +32,10 @@ const (
 	BILL_SVC   = "bill"
 	BATTLE_SVC = "battle"
 
+	ENV_PC  = "pc"
+	ENV_K3S = "k3s"
+	ENV_K8S = "k8s"
+
 	Platform_Android = "android"
 	Platform_IOS     = "ios"
 

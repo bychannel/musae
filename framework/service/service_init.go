@@ -85,9 +85,9 @@ func (s *Service) GlobalTopicID() string {
 func (s *Service) InitLog() error {
 	fmt.Println("InitLog dir:", s.LogDir)
 	var fileName string
-	if global.IsCloud {
+	if baseconf.GetBaseConf().Env != global.ENV_PC {
 		//fileName = fmt.Sprintf("%s-%v-%v", s.AppId, global.SID, time.Now().Format("2006-01-02-15-04-05"))
-		fileName = fmt.Sprintf("%s-%v-%v", s.AppId, global.SID, time.Now().Format("2006-01-02"))
+		fileName = fmt.Sprintf("%s-%v", global.HostName, time.Now().Format("2006-01-02"))
 	} else {
 		fileName = fmt.Sprintf("%s-%s", s.AppId, time.Now().Format("2006-01-02"))
 	}

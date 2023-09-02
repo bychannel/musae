@@ -24,6 +24,7 @@ type ESConf struct {
 
 type BaseConf struct {
 	IsDebug                 bool    `json:"debug"`
+	Env                     string  `json:"env"`                     // server run env: pc, k3s, k8s
 	IsDBPrefix              bool    `json:"dbPrefix"`                // 存储db key添加ns:grout:前缀正式环境必须false
 	Protocol                string  `json:"protocol"`                // app-protocol, http or grpc
 	DaprClientRetry         int     `json:"daprClientRetry"`         // dapr client 重连次数
