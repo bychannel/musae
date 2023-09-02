@@ -4,6 +4,7 @@ package metrics
 const (
 	Redis  = "Redis"  // Redis
 	Mongo  = "Mongo"  // Mongo
+	ES     = "ES"     // ES
 	Invoke = "Invoke" // Invoke
 	PubSub = "PubSub" // PubSub
 
@@ -19,6 +20,7 @@ const (
 	//blocking
 	RedisBlock  BlockingType = "Redis"  // Redis Delay
 	MongoBlock  BlockingType = "Mongo"  // Mongo Delay
+	ESBlock     BlockingType = "ES"     // ES Delay
 	InvokeBlock BlockingType = "Invoke" // Invoke Delay
 
 	// log
@@ -31,10 +33,14 @@ const (
 	RedisWCount GaugeType = "RedisWCount" // Redis write count
 	MongoRCount GaugeType = "MongoRCount" // Mongo read count
 	MongoWCount GaugeType = "MongoWCount" // Mongo write count
+	ESRCount    GaugeType = "ESRCount"    // ES read count
+	ESWCount    GaugeType = "ESWCount"    // ES write count
 	RedisRErr   GaugeType = "RedisRErr"   // Redis read Err count
 	RedisWErr   GaugeType = "RedisWErr"   // Redis write Err count
 	MongoRErr   GaugeType = "MongoRErr"   // Mongo read Err count
 	MongoWErr   GaugeType = "MongoWErr"   // Mongo write Err count
+	ESRErr      GaugeType = "ESRErr"      // ES read Err count
+	ESWErr      GaugeType = "ESWErr"      // ES write Err count
 
 	InvokePubCount GaugeType = "InvokePubCount" // InvokePub count
 	InvokeSubCount GaugeType = "InvokeSubCount" // InvokeSub count
@@ -43,6 +49,7 @@ const (
 
 	RedisWSize    GaugeType = "RedisWSize"    // Redis write size
 	MongoWSize    GaugeType = "MongoWSize"    // Mongo write size
+	ESWSize       GaugeType = "ESWSize"       // ES write size
 	GateConnCount GaugeType = "GateConnCount" // PubSub count
 
 	// histogram
@@ -50,10 +57,12 @@ const (
 	UserInvokeDelayHist HistogramType = "UserInvokeDelayHist" // user invoke delay histogram
 	RoomInvokeDelayHist HistogramType = "RoomInvokeDelayHist" // user invoke delay histogram
 	ChatInvokeDelayHist HistogramType = "ChatInvokeDelayHist" // user invoke delay histogram
-	RedisRDelayHist     HistogramType = "RedisRDelayHist"     // redis r delay histogram
-	RedisWDelayHist     HistogramType = "RedisWDelayHist"     // redis w delay histogram
-	MongoRDelayHist     HistogramType = "MongoRDelayHist"     // redis r delay histogram
-	MongoWDelayHist     HistogramType = "MongoWDelayHist"     // redis r delay histogram
+	RedisRDelayHist     HistogramType = "RedisRDelayHist"     // Redis r delay histogram
+	RedisWDelayHist     HistogramType = "RedisWDelayHist"     // Redis w delay histogram
+	MongoRDelayHist     HistogramType = "MongoRDelayHist"     // Mongo r delay histogram
+	MongoWDelayHist     HistogramType = "MongoWDelayHist"     // Mongo r delay histogram
+	ESRDelayHist        HistogramType = "ESRDelayHist"        // ES r delay histogram
+	ESWDelayHist        HistogramType = "ESWDelayHist"        // ES r delay histogram
 
 	GuideDelayHist HistogramType = "GuideDelayHist" // guide delay histogram
 
@@ -104,6 +113,7 @@ func RegisterMetrics() {
 
 	RegisterBlockMetric(RedisBlock, Redis)
 	RegisterBlockMetric(MongoBlock, Mongo)
+	RegisterBlockMetric(ESBlock, ES)
 	RegisterBlockMetric(InvokeBlock, Invoke)
 
 	RegisterGauge(WarnCount, true)
@@ -114,10 +124,14 @@ func RegisterMetrics() {
 	RegisterGauge(RedisWCount, true)
 	RegisterGauge(MongoRCount, true)
 	RegisterGauge(MongoWCount, true)
+	RegisterGauge(ESRCount, true)
+	RegisterGauge(ESWCount, true)
 	RegisterGauge(RedisRErr, false)
 	RegisterGauge(RedisWErr, false)
 	RegisterGauge(MongoRErr, false)
 	RegisterGauge(MongoWErr, false)
+	RegisterGauge(ESRErr, false)
+	RegisterGauge(ESWErr, false)
 
 	RegisterGauge(MsgPubCount, false)
 	RegisterGauge(MsgSubCount, false)
@@ -125,6 +139,7 @@ func RegisterMetrics() {
 	RegisterGauge(InvokeSubCount, true)
 	RegisterGauge(RedisWSize, true)
 	RegisterGauge(MongoWSize, true)
+	RegisterGauge(ESWSize, true)
 
 	RegisterGauge(PanicCount, false)
 	RegisterGauge(ErrCount, false)
@@ -137,4 +152,6 @@ func RegisterMetrics() {
 	RegisterHistogram(RedisWDelayHist, nil, Redis)
 	RegisterHistogram(MongoRDelayHist, nil, Mongo)
 	RegisterHistogram(MongoWDelayHist, nil, Mongo)
+	RegisterHistogram(ESRDelayHist, nil, ES)
+	RegisterHistogram(ESWDelayHist, nil, ES)
 }

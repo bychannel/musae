@@ -16,6 +16,7 @@ import (
 	"gitlab.musadisca-games.com/wangxw/musae/framework/baseconf"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/global"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/logger"
+	"gitlab.musadisca-games.com/wangxw/musae/framework/metrics"
 	"net/http"
 	"time"
 )
@@ -50,10 +51,9 @@ func (s *Service) initES() error {
 }
 
 func (s *Service) ESPutNoId(dbName string, data proto.Message) error {
-	res, err := s.ES.Index(dbName).
-		Request(data).
-		Refresh(refresh.True).
-		Do(context.Background())
+	start := time.Now()
+	res, err := s.ES.Index(dbName).Request(data).Refresh(refresh.True).Do(context.Background())
+	handleESWriteMetric(start, data, err)
 	if err != nil || (res.Result != result.Created && res.Result != result.Updated) {
 		return err
 	}
@@ -61,11 +61,9 @@ func (s *Service) ESPutNoId(dbName string, data proto.Message) error {
 }
 
 func (s *Service) ESPut(dbName, id string, data proto.Message) error {
-	res, err := s.ES.Index(dbName).
-		Id(id).
-		Request(data).
-		Refresh(refresh.True).
-		Do(context.Background())
+	start := time.Now()
+	res, err := s.ES.Index(dbName).Id(id).Request(data).Refresh(refresh.True).Do(context.Background())
+	handleESWriteMetric(start, data, err)
 	if err != nil || (res.Result != result.Created && res.Result != result.Updated) {
 		return errors.Wrap(err, res.Result.Name)
 	}
@@ -73,14 +71,15 @@ func (s *Service) ESPut(dbName, id string, data proto.Message) error {
 }
 
 func (s *Service) ESGet(dbName, id string) (error, []byte) {
+	start := time.Now()
 	res, err := s.ES.Get(dbName, id).Do(context.Background())
+	handleESReadMetric(start, err)
 	if err != nil {
 		return errors.Wrapf(err, "es get err, db:%s, id:%s", dbName, id), nil
 	}
 	if !res.Found {
 		return DB_ERROR_NOT_EXIST, nil
 	}
-
 	return nil, res.Source_
 }
 
@@ -134,6 +133,7 @@ func (s *Service) ESMultiSearch(dbName string, matchMap map[string]string, range
 		query       = make([]types.Query, 0)
 		filterQuery = make([]types.Query, 0)
 		req         = &search.Request{}
+		start       = time.Now()
 	)
 
 	//if len(matchMap) == 0 && len(rangeMap) == 0 {
@@ -191,6 +191,7 @@ func (s *Service) ESMultiSearch(dbName string, matchMap map[string]string, range
 	logger.Debugf("ESMultiSearch 请求: %s", string(reqStr))
 	// 请求数据
 	res, err := s.ES.Search().Index(dbName).Request(req).Do(context.Background())
+	handleESReadMetric(start, err)
 	if err != nil {
 		return errors.Wrapf(err, "es search err,dbName:%s, matchMap:%v", dbName, matchMap), nil
 	}
@@ -205,6 +206,7 @@ func (s *Service) ESMultiSearchPage(dbName string, rangeMap map[string]RangeItem
 	var (
 		query = make([]types.Query, 0)
 		req   = &search.Request{}
+		start = time.Now()
 	)
 
 	// 范围条件
@@ -235,11 +237,35 @@ func (s *Service) ESMultiSearchPage(dbName string, rangeMap map[string]RangeItem
 	logger.Debugf("ESMultiSearch 请求: %s", string(reqStr))
 	// 请求数据
 	res, err := s.ES.Search().Index(dbName).Request(req).Do(context.Background())
+	handleESReadMetric(start, err)
 	if err != nil {
 		return errors.Wrapf(err, "es search err,dbName:%s, matchMap:%v", dbName), nil
 	}
 	if res.TimedOut {
 		return DB_ERROR_TIMEOUT, nil
 	}
+
 	return nil, &res.Hits
+}
+
+func handleESReadMetric(start time.Time, err error) {
+	delay := time.Since(start).Milliseconds()
+	metrics.GaugeInc(metrics.ESRCount)                            // 读次数
+	metrics.HistogramPut(metrics.ESRDelayHist, delay, metrics.ES) // 读延迟
+	if err != nil {
+		metrics.GaugeInc(metrics.ESRErr) // 读错误
+	}
+}
+
+func handleESWriteMetric(start time.Time, data proto.Message, err error) {
+	metrics.GaugeInc(metrics.ESWCount) // 写次数
+
+	delay := time.Since(start).Milliseconds()
+	metrics.HistogramPut(metrics.ESWDelayHist, delay, metrics.ES) // 写延迟
+
+	dataSize, _ := proto.Marshal(data)
+	metrics.GaugeAdd(metrics.ESWSize, int64(len(dataSize))) // 写大小
+	if err != nil {
+		metrics.GaugeInc(metrics.ESWErr) // 写错误
+	}
 }
