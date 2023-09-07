@@ -3,6 +3,7 @@ package utils
 import (
 	"encoding/binary"
 	"encoding/json"
+	"gitlab.musadisca-games.com/wangxw/musae/framework/baseconf"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -36,6 +37,9 @@ func PathExists(path string) bool {
 
 // PrettyJson pretty json for log
 func PrettyJson(message interface{}) string {
+	if !baseconf.GetBaseConf().IsDebug {
+		return ""
+	}
 	var b []byte
 	var err error
 	if runtime.GOOS == "windows" {

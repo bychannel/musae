@@ -316,9 +316,9 @@ func (packx Packx) BodyBytesOf(stream []byte) ([]byte, error) {
 
 // decrpt client stream
 func Decrypt(stream []byte, secretKey string) ([]byte, error) {
-	logger.Debugf("----- 收到的数据 -----%v, secretKey:%s", stream, secretKey)
+	//logger.Debugf("----- 收到的数据 -----%v, secretKey:%s", stream, secretKey)
 	allLen, err := LengthOf(stream)
-	logger.Debugf("----- allLen -----%d", allLen)
+	//logger.Debugf("----- allLen -----%d", allLen)
 	if err != nil {
 		logger.Warnf(err.Error())
 		return nil, err
@@ -326,7 +326,7 @@ func Decrypt(stream []byte, secretKey string) ([]byte, error) {
 
 	// encrpt data
 	crcLen, err := CRCLengthOf(stream)
-	logger.Debugf("----- crcLen -----%d", crcLen)
+	//logger.Debugf("----- crcLen -----%d", crcLen)
 	if err != nil {
 		logger.Warnf(err.Error())
 		return nil, err
@@ -334,11 +334,11 @@ func Decrypt(stream []byte, secretKey string) ([]byte, error) {
 
 	info := stream[:16]
 	cryptData := stream[16 : allLen+KEEP_PACK_SIZE]
-	logger.Debugf("----- cryptData -----%d", len(cryptData))
+	//logger.Debugf("----- cryptData -----%d", len(cryptData))
 
 	// crc
 	myCRC := utils.GenerateCheckSum(cryptData)
-	logger.Debugf("----- myCRC -----%d", myCRC)
+	//logger.Debugf("----- myCRC -----%d", myCRC)
 	if int32(myCRC) != crcLen {
 		return nil, errors.New(fmt.Sprintf("Decrypt, CRC check faild, client crc:%d, server crc:%d", crcLen, myCRC))
 	}

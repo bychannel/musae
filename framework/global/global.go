@@ -4,6 +4,7 @@ var AppID string      // 服务器标识
 var HostName string   // 系统主机名
 var IsCloud bool      // 是否云环境
 var IsDev bool        // 是否开发环境
+var Env string        // 服务器运行环境
 var SID int64         // 服务ID
 var Gateway string    // 网关地址
 var TcpAddr string    // 长链接地址
@@ -32,9 +33,10 @@ const (
 	BILL_SVC   = "bill"
 	BATTLE_SVC = "battle"
 
-	ENV_PC  = "pc"
-	ENV_K3S = "k3s"
-	ENV_K8S = "k8s"
+	ENV_PC   = "pc"
+	ENV_IK3S = "ik3s" //内网 k3s
+	ENV_OK3S = "ok3s" //外网 k3s
+	ENV_K8S  = "k8s"  // 外网 k8s
 
 	Platform_Android = "android"
 	Platform_IOS     = "ios"

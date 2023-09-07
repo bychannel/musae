@@ -1,6 +1,9 @@
 package state
 
-import "fmt"
+import (
+	"fmt"
+	"gitlab.musadisca-games.com/wangxw/musae/framework/baseconf"
+)
 
 // KvTable
 type KvTable struct {
@@ -14,5 +17,9 @@ type KvTable struct {
 }
 
 func (d *KvTable) Str() string {
-	return fmt.Sprintf("KvTable:{Key:%v, Id:%v, UID:%v, DataLen:%v, Data:%v, UpSecTS:%v, InSecTS:%v}", d.Key, d.Id, d.UID, len(d.Data), d.DataSrc, d.UpSecTS, d.InSecTS)
+	if baseconf.GetBaseConf().IsDebug {
+		return fmt.Sprintf("KvTable:{Key:%v, Id:%v, UID:%v, DataLen:%v, Data:%v, UpSecTS:%v, InSecTS:%v}", d.Key, d.Id, d.UID, len(d.Data), d.DataSrc, d.UpSecTS, d.InSecTS)
+	} else {
+		return fmt.Sprintf("KvTable:{Key:%v, Id:%v, UID:%v, DataLen:%v, Data:%v, UpSecTS:%v, InSecTS:%v}", d.Key, d.Id, d.UID, len(d.Data), "", d.UpSecTS, d.InSecTS)
+	}
 }
