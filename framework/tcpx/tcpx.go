@@ -566,7 +566,7 @@ func (tcpx *TcpX) ListenAndServeTCP(network, addr string) error {
 					if e == io.EOF {
 						break
 					}
-					logger.Warn(e)
+					//logger.Warn(e)
 					break
 				}
 				tmpContext := copyContext(*ctx)

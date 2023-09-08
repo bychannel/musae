@@ -20,6 +20,11 @@ var RdsCfgCenterPass string  // redis配置中心 passwd
 var RdsCfgNameSpace string   // redis配置中心 namespace
 var RdsCfgGroup string       // redis配置中心 group
 
+var RdsSrvHost string // redis游戏数据库 addr+port
+var RdsSrvPass string // redis游戏数据库 passwd
+var ESSrvHost string  // ES游戏数据库 addr+port
+var ESSrvPass string  // ES游戏数据库 passwd
+
 const (
 	//server appid
 	GUIDE_SVC  = "guide"
@@ -33,10 +38,9 @@ const (
 	BILL_SVC   = "bill"
 	BATTLE_SVC = "battle"
 
-	ENV_PC   = "pc"
-	ENV_IK3S = "ik3s" //内网 k3s
-	ENV_OK3S = "ok3s" //外网 k3s
-	ENV_K8S  = "k8s"  // 外网 k8s
+	ENV_PC  = "pc"
+	ENV_K3S = "k3s" //k3s
+	ENV_K8S = "k8s" // 外网 k8s
 
 	Platform_Android = "android"
 	Platform_IOS     = "ios"

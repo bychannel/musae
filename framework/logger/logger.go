@@ -242,9 +242,10 @@ func ToString(value interface{}) string {
 
 func writeLog(l zapcore.Level, str string) {
 	if baseconf.GetBaseConf() == nil {
+		fmt.Println(str)
 		return
 	}
-	if !global.IsCloud {
+	if global.Env != global.ENV_K8S {
 		SaveToRedis(str)
 	}
 	maxLen := baseconf.GetBaseConf().LogMaxLen

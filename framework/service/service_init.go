@@ -85,7 +85,7 @@ func (s *Service) GlobalTopicID() string {
 func (s *Service) InitLog() error {
 	fmt.Println("InitLog dir:", s.LogDir)
 	var fileName string
-	if baseconf.GetBaseConf().Env != global.ENV_PC {
+	if global.Env != global.ENV_PC {
 		//fileName = fmt.Sprintf("%s-%v-%v", s.AppId, global.SID, time.Now().Format("2006-01-02-15-04-05"))
 		fileName = fmt.Sprintf("%s-%v", global.HostName, time.Now().Format("2006-01-02"))
 	} else {
@@ -268,7 +268,7 @@ func (s *Service) initSvc() error {
 
 	// add ready handler
 	if err := s.svc.AddHealthCheckHandler("/api/ready", func(ctx context.Context) (err error) {
-		logger.Debugf("/api/ready, server state: %v", s.state)
+		//logger.Debugf("/api/ready, server state: %v", s.state)
 		if s.state == base.PState_Running {
 			return nil
 		}
@@ -278,7 +278,7 @@ func (s *Service) initSvc() error {
 	}
 	// add healthz handler
 	if err := s.svc.AddHealthCheckHandler("/api/healthz", func(ctx context.Context) (err error) {
-		logger.Debugf("/api/healthz, server state: %v", s.state)
+		//logger.Debugf("/api/healthz, server state: %v", s.state)
 		return nil
 	}); err != nil {
 		return err
