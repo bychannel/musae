@@ -24,6 +24,7 @@ var RdsSrvHost string // redis游戏数据库 addr+port
 var RdsSrvPass string // redis游戏数据库 passwd
 var ESSrvHost string  // ES游戏数据库 addr+port
 var ESSrvPass string  // ES游戏数据库 passwd
+var ESSrvUser string  // ES游戏数据库 passwd
 
 const (
 	//server appid
