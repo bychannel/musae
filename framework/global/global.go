@@ -8,6 +8,7 @@ var Env string        // 服务器运行环境
 var SID int64         // 服务ID
 var Gateway string    // 网关地址
 var TcpAddr string    // 长链接地址
+var UpdateAddr string // 客户端下载地址
 var StartTime int64   // 服务器启动时间
 var MetricPort string // 指标端口
 var GateServices []string
