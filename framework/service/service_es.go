@@ -41,6 +41,7 @@ func (s *Service) initES() error {
 		cfg.Addresses = []string{baseconf.GetBaseConf().ESConf.AddrDev}
 	}
 
+	logger.Infof("es client init, options:%+v", cfg)
 	var err error
 	s.ES, err = elasticsearch.NewTypedClient(cfg)
 	if err != nil {
