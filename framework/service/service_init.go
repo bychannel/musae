@@ -202,6 +202,7 @@ func (s *Service) initRedis() error {
 			MaxRetryBackoff: time.Duration(baseconf.GetBaseConf().RedisConf.MaxRetryBackoff) * time.Millisecond,
 		}
 		s.RedisCluster = redis.NewClusterClient(clusterOpts)
+		logger.Infof("redis cluster client init, cluster options:%+v", clusterOpts)
 	} else {
 		opts = &redis.Options{
 			Addr:            baseconf.GetBaseConf().RedisConf.AddrDev,
@@ -215,21 +216,21 @@ func (s *Service) initRedis() error {
 		}
 		s.Redis = redis.NewClient(opts)
 		logger.RedisCli = s.Redis
+		logger.Infof("redis client Init, options:%+v", opts)
 	}
 
 	if s.Redis != nil {
 		pong := s.Redis.Ping(context.Background())
 		if pong.Err() != nil {
-			panic(fmt.Sprintf("redis init failed, got err: %v", pong.Err()))
+			logger.Fatalf("redis init failed, got err: %v", pong.Err())
 		}
-		logger.Infof("redis client Init success,options:%+v", opts)
 	}
+
 	if s.RedisCluster != nil {
 		pong := s.RedisCluster.Ping(context.Background())
 		if pong.Err() != nil {
-			panic(fmt.Sprintf("redis init failed, got err: %v", pong.Err()))
+			logger.Fatalf("redis init failed, got err: %v", pong.Err())
 		}
-		logger.Infof("redis cluster client Init success, cluster options:%+v", clusterOpts)
 	}
 	return nil
 }
