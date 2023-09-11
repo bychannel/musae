@@ -86,6 +86,7 @@ type BaseConf struct {
 	DelayLogLimit           int64   `json:"delayLogLimit"`           //耗时收集日志阈值
 	MailActorMin            int32   `json:"mailActorMin"`            //邮件actor最小启用数量
 	MailActorPercent        int32   `json:"mailActorPercent"`        //邮件Actor启用数量万分比
+	CanPay           		int32   `json:"canPay"`           		 //是否开启充值, 1:是, 0:否
 	CanVirtualPay           int32   `json:"canVirtualPay"`           //是否支持模拟充值, 1:是, 0:否
 	//DefaultEncrypt      string `json:"defaultEncrypt"`      //默认的秘钥
 	RedisConf RedisConf `json:"RedisConf"`
