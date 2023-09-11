@@ -217,7 +217,20 @@ func (s *Service) initRedis() error {
 		logger.RedisCli = s.Redis
 	}
 
-	logger.Infof("redis Init success,options:%+v", opts)
+	if s.Redis != nil {
+		pong := s.Redis.Ping(context.Background())
+		if pong.Err() != nil {
+			panic(fmt.Sprintf("redis init failed, got err: %v", pong.Err()))
+		}
+		logger.Infof("redis client Init success,options:%+v", opts)
+	}
+	if s.RedisCluster != nil {
+		pong := s.RedisCluster.Ping(context.Background())
+		if pong.Err() != nil {
+			panic(fmt.Sprintf("redis init failed, got err: %v", pong.Err()))
+		}
+		logger.Infof("redis cluster client Init success, cluster options:%+v", clusterOpts)
+	}
 	return nil
 }
 
