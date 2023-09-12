@@ -5,7 +5,6 @@ import (
 	"fmt"
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/baseconf"
-	"gitlab.musadisca-games.com/wangxw/musae/framework/global"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/logger"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/utils"
 	"go.uber.org/zap"
@@ -13,7 +12,6 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 	"os"
 	"path/filepath"
-	"strconv"
 	"time"
 )
 
@@ -80,11 +78,7 @@ func (p *Dlogger) Init(logPath, fileName string, threads int) error {
 		if threads < 0 {
 			threads = 0
 		}
-		if global.IsCloud {
-			fileName = "dlog-" + fileName + "-" + strconv.FormatInt(time.Now().UnixNano()/1e6, 10) + "-" + strconv.Itoa(os.Getpid())
-		} else {
-			fileName = "dlog-" + fileName
-		}
+		fileName += "_%Y-%m-%d-%H-%M-%S.log"
 		atomLevel := zap.NewAtomicLevelAt(zap.InfoLevel)
 		encoder := zapcore.NewConsoleEncoder(zapcore.EncoderConfig{
 			//TimeKey:        "T",
@@ -106,7 +100,7 @@ func (p *Dlogger) Init(logPath, fileName string, threads int) error {
 		switch p.cutType {
 		case logger.LOG_SIZE_CUT_TYPE:
 			syncWriter = zapcore.AddSync(&lumberjack.Logger{
-				Filename:   filepath.Join(logPath, fileName+".log"),
+				Filename:   filepath.Join(logPath, fileName),
 				MaxAge:     baseconf.GetBaseConf().LogMaxAges,
 				MaxBackups: baseconf.GetBaseConf().LogMaxBackups,
 				MaxSize:    baseconf.GetBaseConf().LogMaxSize,
@@ -114,7 +108,7 @@ func (p *Dlogger) Init(logPath, fileName string, threads int) error {
 			})
 		case logger.LOG_TIME_CUT_TYPE:
 			logWriter, err := rotatelogs.New(
-				filepath.Join(logPath, fileName+".log"),
+				filepath.Join(logPath, fileName),
 				rotatelogs.WithMaxAge(time.Duration(baseconf.GetBaseConf().LogMaxAges)*time.Hour*24),
 				rotatelogs.WithRotationTime(time.Minute*time.Duration(baseconf.GetBaseConf().LogRotationTime)),
 				rotatelogs.WithRotationSize(int64(baseconf.GetBaseConf().LogMaxSize*1024*1024)),

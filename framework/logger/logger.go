@@ -97,7 +97,7 @@ func Init(logPath, fileName string) error {
 	if fileName == "" {
 		fileName = GetProcName()
 	}
-
+	fileName += "_%Y-%m-%d-%H-%M-%S.log"
 	//_log, _ = zap.NewProduction(zap.AddCaller())
 	encoder := zapcore.NewConsoleEncoder(zapcore.EncoderConfig{
 		//TimeKey:        "T",
@@ -141,7 +141,7 @@ func Init(logPath, fileName string) error {
 		switch cutType {
 		case LOG_SIZE_CUT_TYPE:
 			syncWriter = zapcore.AddSync(&lumberjack.Logger{
-				Filename:   filepath.Join(logPath, fileName+".log"),
+				Filename:   filepath.Join(logPath, fileName),
 				MaxAge:     baseconf.GetBaseConf().LogMaxAges,
 				MaxBackups: baseconf.GetBaseConf().LogMaxBackups,
 				MaxSize:    baseconf.GetBaseConf().LogMaxSize,
@@ -149,7 +149,7 @@ func Init(logPath, fileName string) error {
 			})
 		case LOG_TIME_CUT_TYPE:
 			logWriter, err := rotatelogs.New(
-				filepath.Join(logPath, fileName+"-%Y%m%d%H%M%S.log"),
+				filepath.Join(logPath, fileName),
 				rotatelogs.WithMaxAge(time.Duration(baseconf.GetBaseConf().LogMaxAges)*time.Hour*24),
 				rotatelogs.WithRotationTime(time.Minute*time.Duration(baseconf.GetBaseConf().LogRotationTime)),
 				rotatelogs.WithRotationSize(int64(baseconf.GetBaseConf().LogMaxSize*1024*1024)),
