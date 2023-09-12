@@ -87,9 +87,9 @@ func (s *Service) InitLog() error {
 	var fileName string
 	if global.Env != global.ENV_PC {
 		//fileName = fmt.Sprintf("%s-%v-%v", s.AppId, global.SID, time.Now().Format("2006-01-02-15-04-05"))
-		fileName = fmt.Sprintf("%s-%v", global.HostName, time.Now().Format("2006-01-02"))
+		fileName = fmt.Sprintf("%s", global.HostName /*, time.Now().Format("2006-01-02")*/)
 	} else {
-		fileName = fmt.Sprintf("%s-%s", s.AppId, time.Now().Format("2006-01-02"))
+		fileName = fmt.Sprintf("%s", s.AppId /*, time.Now().Format("2006-01-02")*/)
 	}
 	if err := logger.Init(s.LogDir+"/plog", fileName); err != nil {
 		return err
