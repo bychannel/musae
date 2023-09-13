@@ -65,7 +65,7 @@ func (b *ActorLogger) Fatalf(template string, args ...interface{}) {
 }
 
 func (b *ActorLogger) Info(args ...interface{}) {
-	logger.FatalA(b.prefix() + " " + fmt.Sprintln(args...))
+	logger.InfoA(b.prefix() + " " + fmt.Sprintln(args...))
 }
 
 func (b *ActorLogger) Infof(template string, args ...interface{}) {
