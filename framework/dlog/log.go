@@ -78,7 +78,7 @@ func (p *Dlogger) Init(logPath, fileName string, threads int) error {
 		if threads < 0 {
 			threads = 0
 		}
-		fileName += "_%Y-%m-%d-%H-%M-%S.log"
+		fileName = "dlog-" + fileName + "_%Y-%m-%d-%H-%M-%S.log"
 		atomLevel := zap.NewAtomicLevelAt(zap.InfoLevel)
 		encoder := zapcore.NewConsoleEncoder(zapcore.EncoderConfig{
 			//TimeKey:        "T",
