@@ -202,6 +202,8 @@ func (m *MetricMgr) Start(svcPath, logFile string, isk8s bool) {
 	// 指标端口为空时写指标数据到文件
 	if global.MetricPort == "" {
 		go m.tickLogger(isk8s)
+	} else {
+		go m.tickMetric()
 	}
 }
 
@@ -245,6 +247,38 @@ func (m *MetricMgr) tickLogger(isk8s bool) {
 			}
 		case <-m.loggerDone:
 			fmt.Println("tickLogger stop logger")
+			return
+		}
+	}
+}
+
+//
+// tickMetric
+//  @Description: 定期重置周期性指标数据
+//
+func (m *MetricMgr) tickMetric() {
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Println("tickMetric recover:", err)
+		}
+	}()
+
+	ticker := time.NewTicker(time.Duration(OutputInterval) * time.Second) //TickLoggerInterval s 输出一次
+	for {
+		select {
+		case <-ticker.C:
+			if baseconf.GetBaseConf() != nil && baseconf.GetBaseConf().Metric {
+				func() {
+					defer func() {
+						if err := recover(); err != any(nil) {
+							fmt.Println("tickMetric recover, err: ", err)
+						}
+					}()
+					doTickMetric()
+				}()
+			}
+		case <-m.loggerDone:
+			fmt.Println("tickMetric stop")
 			return
 		}
 	}
