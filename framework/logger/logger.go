@@ -386,7 +386,7 @@ func ErrorA(args ...interface{}) {
 		callStack := "===>>>CallStack\n" + string(debug.Stack())
 		logStack := log + "\n" + callStack
 		writeLog(zap.ErrorLevel, logStack)
-		if baseconf.GetBaseConf() != nil && baseconf.GetBaseConf().IsDebug && len(baseconf.GetBaseConf().FeishuLogRobot) > 0 {
+		if baseconf.GetBaseConf() != nil && len(baseconf.GetBaseConf().FeishuLogRobot) > 0 {
 			PushLog2Chat(baseconf.GetBaseConf().FeishuLogRobot, "ERROR", logStack)
 		}
 		metrics.GaugeInc(metrics.ErrorCount)
@@ -404,7 +404,7 @@ func ErrorAf(template string, args ...interface{}) {
 		logStack := log + "\n" + callStack
 		writeLog(zap.ErrorLevel, logStack)
 
-		if baseconf.GetBaseConf() != nil && baseconf.GetBaseConf().IsDebug && len(baseconf.GetBaseConf().FeishuLogRobot) > 0 {
+		if baseconf.GetBaseConf() != nil && len(baseconf.GetBaseConf().FeishuLogRobot) > 0 {
 			PushLog2Chat(baseconf.GetBaseConf().FeishuLogRobot, "ERROR", logStack)
 		}
 		metrics.GaugeInc(metrics.ErrorCount)
@@ -428,12 +428,11 @@ func FatalA(args ...interface{}) {
 		log := Caller(zap.FatalLevel) + fmt.Sprintln(args...)
 		callStack := "===>>>CallStack\n" + string(debug.Stack())
 		logStack := log + "\n" + callStack
-		writeLog(zap.FatalLevel, logStack)
-
-		if baseconf.GetBaseConf() != nil && baseconf.GetBaseConf().IsDebug && len(baseconf.GetBaseConf().FeishuLogRobot) > 0 {
+		if baseconf.GetBaseConf() != nil && len(baseconf.GetBaseConf().FeishuLogRobot) > 0 {
 			PushLog2Chat(baseconf.GetBaseConf().FeishuLogRobot, "FATAL", logStack)
 		}
 		metrics.GaugeInc(metrics.FatalCount)
+		writeLog(zap.FatalLevel, logStack)
 	}
 }
 
@@ -446,11 +445,11 @@ func FatalAf(template string, args ...interface{}) {
 		log := Caller(zap.FatalLevel) + fmt.Sprintf(template, args...)
 		callStack := "===>>>CallStack\n" + string(debug.Stack())
 		logStack := log + "\n" + callStack
-		writeLog(zap.FatalLevel, logStack)
-		if baseconf.GetBaseConf() != nil && baseconf.GetBaseConf().IsDebug && len(baseconf.GetBaseConf().FeishuLogRobot) > 0 {
+		if baseconf.GetBaseConf() != nil && len(baseconf.GetBaseConf().FeishuLogRobot) > 0 {
 			PushLog2Chat(baseconf.GetBaseConf().FeishuLogRobot, "FATAL", logStack)
 		}
 		metrics.GaugeInc(metrics.FatalCount)
+		writeLog(zap.FatalLevel, logStack)
 	}
 }
 
