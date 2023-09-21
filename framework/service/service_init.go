@@ -200,6 +200,8 @@ func (s *Service) initRedis() error {
 			MaxRetries:      baseconf.GetBaseConf().RedisConf.MaxRetries,
 			MinRetryBackoff: time.Duration(baseconf.GetBaseConf().RedisConf.MinRetryBackoff) * time.Millisecond,
 			MaxRetryBackoff: time.Duration(baseconf.GetBaseConf().RedisConf.MaxRetryBackoff) * time.Millisecond,
+			PoolSize:        baseconf.GetBaseConf().RedisConf.PoolSize,
+			MinIdleConns:    baseconf.GetBaseConf().RedisConf.MinIdleConns,
 		}
 		s.RedisCluster = redis.NewClusterClient(clusterOpts)
 		logger.Infof("redis cluster client init, cluster options:%+v", clusterOpts)
@@ -213,6 +215,8 @@ func (s *Service) initRedis() error {
 			MaxRetries:      baseconf.GetBaseConf().RedisConf.MaxRetries,
 			MinRetryBackoff: time.Duration(baseconf.GetBaseConf().RedisConf.MinRetryBackoff) * time.Millisecond,
 			MaxRetryBackoff: time.Duration(baseconf.GetBaseConf().RedisConf.MaxRetryBackoff) * time.Millisecond,
+			PoolSize:        baseconf.GetBaseConf().RedisConf.PoolSize,
+			MinIdleConns:    baseconf.GetBaseConf().RedisConf.MinIdleConns,
 		}
 		s.Redis = redis.NewClient(opts)
 		logger.RedisCli = s.Redis

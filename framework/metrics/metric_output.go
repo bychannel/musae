@@ -327,3 +327,23 @@ func OutputMetricLogForExporter(logFile string) {
 		}
 	}
 }
+
+// doTickMetric
+func doTickMetric() {
+	mfs, err := prometheus.DefaultGatherer.Gather()
+	if err != nil {
+		return
+	}
+	for _, mf := range mfs {
+		if mf.GetType() == io_prometheus_client.MetricType_GAUGE {
+			name := mf.GetName()
+			if strings.Contains(name, "aniwar_") {
+				metricName := strings.Replace(name, "aniwar_", "", 1)
+				_, ok := metricResetMap[metricName]
+				if ok {
+					GaugeSet(GaugeType(metricName), 0)
+				}
+			}
+		}
+	}
+}
