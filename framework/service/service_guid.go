@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	dapr "github.com/dapr/go-sdk/client"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/global"
 	"gitlab.musadisca-games.com/wangxw/musae/framework/guid"
@@ -12,12 +13,13 @@ import (
 
 func (s *Service) DBNext(name string, delta uint64) (uint64, error) {
 	ctx := context.Background()
-	/*ok, err := s.TryLock(s.AppId, name, LOCK_TTL_SEC)
-	defer s.UnLock(s.AppId, name)
+	resId := fmt.Sprintf("lock:dbnext:%s", name)
+	ok, err := s.TryLock(name, resId, LOCK_TTL_SEC)
+	defer s.UnLock(name, resId)
 	if !ok || err != nil {
-		logger.Errorf("DBNext TryLock err: %v, %v, %+v", err, name, s.AppId)
+		logger.Errorf("TryLock err:%s, %s, %s", err.Error(), name, resId)
 		return 0, err
-	}*/
+	}
 	var f context.CancelFunc
 	ctx, f = context.WithTimeout(ctx, global.DB_INVOKE_TIMEOUT*time.Second)
 	defer f()
