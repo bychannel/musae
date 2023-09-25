@@ -37,14 +37,14 @@ func (s *Service) PrivateTopicID() string {
 		}
 	}
 	if prefix == "" {
-		if global.IsDev {
+		if global.Env == global.ENV_PC {
 			return fmt.Sprintf("%s_%d", s.AppId, global.SID)
 		} else {
 			return global.HostName
 		}
 
 	} else {
-		if global.IsDev {
+		if global.Env == global.ENV_PC {
 			return fmt.Sprintf("%s_%d", s.AppId, global.SID) + ":" + prefix
 		} else {
 			return global.HostName + ":" + prefix
