@@ -56,6 +56,28 @@ func PrettyJson(message interface{}) string {
 	return string(b)
 }
 
+// PrettyJson pretty json for log
+func PrettyJsonLimit(message interface{}) string {
+	var b []byte
+	var err error
+	if runtime.GOOS != "windows" {
+		b, err = json.MarshalIndent(message, "", "\t")
+		if err != nil {
+			return err.Error()
+		}
+	} else {
+		b, err = json.Marshal(message)
+		if err != nil {
+			return err.Error()
+		}
+	}
+	str := string(b)
+	if !baseconf.GetBaseConf().IsDebug && len(str) > 1024 {
+		return string([]rune(str)[:1024]) + "...LogTruncation"
+	}
+	return str
+}
+
 func GetProcName() string {
 	_, fileName := filepath.Split(os.Args[0])
 	return fileName

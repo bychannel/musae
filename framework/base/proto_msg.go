@@ -43,7 +43,7 @@ func (p *ProtoMsg) UnmarshalData(m proto.Message) error {
 	if err != nil {
 		return fmt.Errorf("in:%s, req:%T{%+v}, err:%+v", p, m, m, err)
 	}
-	logger.Infof("\n===>>>MSG-UP msg:[%T], {%s}, {%s}\n", m, utils.PrettyJson(m), p.Str())
+	logger.Infof("\n===>>>MSG-UP msg:[%T], {%s}, {%s}\n", m, utils.PrettyJsonLimit(m), p.Str())
 	return err
 }
 
@@ -86,7 +86,7 @@ func UnmarshalData(bytes []byte, m proto.Message) error {
 	if err != nil {
 		return fmt.Errorf("解析请求参数出错: req:%T{%v}, err:%+v", m, m, err)
 	}
-	logger.Infof("\n===>>>MSG-UP, msg:[%T], {%s}\n", m, utils.PrettyJson(m))
+	logger.Infof("\n===>>>MSG-UP, msg:[%T], {%s}\n", m, utils.PrettyJsonLimit(m))
 
 	return nil
 }
