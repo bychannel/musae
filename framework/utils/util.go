@@ -60,7 +60,7 @@ func PrettyJson(message interface{}) string {
 func PrettyJsonLimit(message interface{}) string {
 	var b []byte
 	var err error
-	if runtime.GOOS != "windows" {
+	if runtime.GOOS == "windows" {
 		b, err = json.MarshalIndent(message, "", "\t")
 		if err != nil {
 			return err.Error()
